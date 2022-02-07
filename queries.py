@@ -1,5 +1,6 @@
 from utils import db
 import pandas as pd
+import numpy as np
 
 con = db.connection
 cur = db.cursor
@@ -398,7 +399,7 @@ def get_stock_data(ticker=None, isin=None):
         fundamentals[f"net margin{scope}"] = fundamentals[f"net income{scope}"] / fundamentals[f"revenue{scope}"]
         fundamentals[f"roa{scope}"] = fundamentals[f"net income{scope}"] / fundamentals[f"total assets{scope}"]
         fundamentals[f"roe{scope}"] = fundamentals[f"net income{scope}"] / fundamentals[f"total shareholders equity{scope}"]
-        fundamentals[f"reinvestment rate{scope}"] = 1+(fundamentals[f"total dividends paid{scope}"]+fundamentals[f"common stock issued/repurchased{scope}"])  / fundamentals[f"cashflow from operating activities{scope}"]
+        fundamentals[f"reinvestment rate{scope}"] = 1+(fundamentals[f"total dividends paid{scope}"].replace(np.NaN, 0)+fundamentals[f"total stock issued/repurchased{scope}"].replace(np.NaN, 0))  / fundamentals[f"net income{scope}"]
         fundamentals[f"equity share{scope}"] = fundamentals[f"total shareholders equity{scope}"] / fundamentals[f"total assets{scope}"]
         fundamentals[f"debt/fcf{scope}"] = ((fundamentals[f"total current liabilities{scope}"] + fundamentals[f"non-current debt{scope}"]) / 
                                             (fundamentals[f"net income{scope}"] +

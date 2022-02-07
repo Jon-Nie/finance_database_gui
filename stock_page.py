@@ -223,6 +223,9 @@ class OverviewSection(QFrame):
         self.news_box = NewsBox("News", None)
         self.layout.addWidget(self.news_box, 2, 1, 2, 1)
 
+        self.news_box = CompetitorsBox("Competitors", None)
+        self.layout.addWidget(self.news_box, 4, 0, 1, 2)
+
     def update_data(self, data):
         self.profile_box.update_data(data["profile"])
         self.key_data_box.update_data(data["time_series"], data["fundamentals"], data["profile"]["currency"])
@@ -531,7 +534,7 @@ class NewsBox(BoxTemplate):
         pass
 
 
-class ExecutivesBox(BoxTemplate):
+class CompetitorsBox(BoxTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -539,7 +542,7 @@ class ExecutivesBox(BoxTemplate):
         pass
 
 
-class CompetitorsBox(BoxTemplate):
+class ExecutivesBox(BoxTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

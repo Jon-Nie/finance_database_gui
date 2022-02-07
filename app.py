@@ -32,6 +32,8 @@ class MainWindow(QMainWindow):
 
         for button in self.sidebar.buttons:
             button.clicked.connect(self.button_clicked)
+        
+        self.sidebar.home_button.animateClick()
 
         self.content.topbar.minimize_button.clicked.connect(self.showMinimized)
         self.content.topbar.maximize_button.clicked.connect(self.maximize_restore)
@@ -91,7 +93,7 @@ class MainWindow(QMainWindow):
     def button_page_match(self):
         dct = {
             self.sidebar.home_button : self.content.pages.home_page,
-            self.sidebar.equities_button : self.content.pages.stock_page,
+            self.sidebar.equities_button : self.content.pages.equities_page,
             self.sidebar.commodities_button : self.content.pages.commodities_page,
             self.sidebar.economics_button : self.content.pages.economics_page,
             self.sidebar.tracker_button : self.content.pages.tracker_page,

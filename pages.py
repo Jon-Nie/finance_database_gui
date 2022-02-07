@@ -23,6 +23,7 @@ class Pages(QStackedWidget):
 
         self.pages = (
             self.home_page,
+            self.equities_page,
             self.stock_page,
             self.commodities_page,
             self.economics_page,
