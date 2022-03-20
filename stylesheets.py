@@ -122,7 +122,7 @@ search_box_css = """
         border-radius: 5px;
         border: 1px solid #a8a8a8;
         padding: 0px 10px 0px 10px;
-        margin: 5px 0px 5px 0px
+        margin: 7px 0px 7px 0px
     }
 """
 
@@ -168,5 +168,22 @@ close_css = """
         background-color: #a32222;
         icon: url(icons/close_white.svg);
         qproperty-iconSize: 20px
+    }
+"""
+
+scrollarea_css = """
+    QScrollArea {
+        border: None
+    }
+    QScrollBar:handle {
+        border: None;
+        background-color: #d4d4d4;
+        border-radius: 3px;
+    }
+    QScrollBar:handle:hover {
+        background-color: #ababab;
+    }
+    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+        background-color: #F6F8FB;
     }
 """
