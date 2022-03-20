@@ -106,3 +106,22 @@ def get_fundamental_data(ticker, variable, source) -> list:
         (security_id, variable_id)
     ).fetchall()
     return data
+
+def get_stock_data(ticker):
+    profile = get_company_profile(ticker)
+    prices = get_price_data(ticker)
+    data = {
+        "logo": profile["logo"],
+        "country_flag": profile["country_flag"],
+        "name": profile["name"],
+        "ticker": profile["ticker"],
+        "isin": profile["isin"],
+        "price": prices.loc[prices.index[-1], "close"],
+        "market_cap": 1,
+        "pe": 1,
+        "div_yield": 1,
+        "beta": 1,
+        "rating": 1,
+        "price_target": 1
+    }
+    return data
