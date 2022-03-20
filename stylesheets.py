@@ -112,3 +112,61 @@ sidebar_button_sub_css = """
         padding: 0px 0px 0px 37px;
     }
 """
+
+search_box_css = """
+    QLineEdit {
+        font-family: Lato;
+        font-size: 14px;
+        background-color: #FFFFFF;
+        color: black;
+        border-radius: 5px;
+        border: 1px solid #a8a8a8;
+        padding: 0px 10px 0px 10px;
+        margin: 5px 0px 5px 0px
+    }
+"""
+
+minimize_css = """
+    QPushButton {
+        border: None;
+        padding: 15px 10px 10px 10px;
+    }
+    QPushButton:hover {
+        background-color: #dcdfe3;
+    }
+    QPushButton:pressed {
+        background-color: #babcbf;
+    }
+"""
+
+maximize_css = """
+    QPushButton {
+        border: None;
+        padding: 12.5px;
+    }
+    QPushButton:hover {
+        background-color: #dcdfe3;
+    }
+    QPushButton:pressed {
+        background-color: #babcbf;
+    }
+"""
+
+close_css = """
+    QPushButton {
+        border: None;
+        padding:10px;
+        icon: url(icons/close_black.svg);
+        qproperty-iconSize: 20px
+    }
+    QPushButton:hover {
+        background-color: #ed3b3b;
+        icon: url(icons/close_white.svg);
+        qproperty-iconSize: 20px
+    }
+    QPushButton:hover:pressed {
+        background-color: #a32222;
+        icon: url(icons/close_white.svg);
+        qproperty-iconSize: 20px
+    }
+"""
