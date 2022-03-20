@@ -9,12 +9,14 @@ from stylesheets import (
     sidebar_button_super_css
 )
 from sidebar import *
+from top_bar import *
 from pages import Pages
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setGeometry(150, 50, 1600, 900)
+        self.setWindowFlags(Qt.Window.FramelessWindowHint)
         
         self.central = QWidget(self)
         self.central.setStyleSheet(app_css)
@@ -33,6 +35,27 @@ class MainWindow(QMainWindow):
 
         self.content = Content()
         self.layout.addWidget(self.content)
+
+        self.content.topbar.minimize_button.clicked.connect(self.showMinimized)
+        self.content.topbar.maximize_button.clicked.connect(self.maximize_restore)
+        self.content.topbar.close_button.clicked.connect(self.close)
+
+        def moveWindow(event):
+            if event.buttons() == Qt.LeftButton:
+                self.move(self.pos() + event.globalPos() - self.dragPos)
+                self.dragPos = event.globalPos()
+                event.accept()
+
+        self.content.topbar.mouseMoveEvent = moveWindow
+
+    def mousePressEvent(self, event):
+        self.dragPos = event.globalPos()
+
+    def maximize_restore(self):
+        if self.isMaximized():
+            self.showNormal()
+        else:
+            self.showMaximized()
 
     def sidebar_button_clicked(self):
         sender = self.sender()
@@ -115,9 +138,9 @@ class Content(QFrame):
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setSpacing(10)
+        self.layout.setSpacing(20)
 
-        self.topbar = QFrame()
+        self.topbar = TopBar()
         self.layout.addWidget(self.topbar)
 
         self.pages = Pages()
