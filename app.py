@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setGeometry(150, 50, 1600, 900)
-        self.setWindowFlags(Qt.Window.FramelessWindowHint)
+        #self.setWindowFlags(Qt.Window.FramelessWindowHint)
         
         self.central = QWidget(self)
         self.central.setStyleSheet(app_css)
@@ -42,14 +42,16 @@ class MainWindow(QMainWindow):
 
         def moveWindow(event):
             if event.buttons() == Qt.LeftButton:
-                self.move(self.pos() + event.globalPos() - self.dragPos)
-                self.dragPos = event.globalPos()
+                self.move(self.pos() + event.globalPos() - self.drag_pos)
+                self.drag_pos = event.globalPos()
                 event.accept()
 
         self.content.topbar.mouseMoveEvent = moveWindow
 
+        self.content.topbar.search_box.returnPressed.connect(self.update_page)
+
     def mousePressEvent(self, event):
-        self.dragPos = event.globalPos()
+        self.drag_pos = event.globalPos()
 
     def maximize_restore(self):
         if self.isMaximized():
@@ -89,6 +91,14 @@ class MainWindow(QMainWindow):
         
         if not isinstance(sender, SidebarButtonSuper):
             self.content.pages.setCurrentWidget(self.button_page_match[sender])
+
+    def update_page(self):
+        if self.sidebar.equities_button.objectName() == "inactive":
+            self.sidebar.equities_button.click()
+        self.sidebar.stocks_button.click()
+        ticker = self.content.topbar.search_box.text().split("|")[0].strip()
+        self.content.pages.stock_page.update_data(ticker)
+        self.content.pages.setCurrentWidget(self.content.pages.stock_page)
 
     @property
     def button_page_match(self):
@@ -145,7 +155,6 @@ class Content(QFrame):
 
         self.pages = Pages()
         self.layout.addWidget(self.pages)
-
 
 if __name__ == "__main__":
     app = QApplication()
