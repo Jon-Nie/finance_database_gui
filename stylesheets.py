@@ -78,6 +78,7 @@ sidebar_button_super_css = """
 
     QPushButton#active {{
         color: #FFFFFF;
+        background-color: #20263A;
         icon: url(icons/{0}_white.svg)
     }}
 """
@@ -86,6 +87,7 @@ sidebar_button_sub_css = """
     QPushButton {
         border: None;
         color: #A1A1A1;
+        background-color: #20263A;
         font-family: Lato;
         font-size: 13px;
         text-align: left;

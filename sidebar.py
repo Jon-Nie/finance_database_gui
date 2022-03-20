@@ -49,7 +49,7 @@ class SideBar(QFrame):
         )
         for button in self.buttons:
             self.layout.addWidget(button)
-
+        
         self.layout.addWidget(QFrame())
     
     def animation(self, button, start, end):
@@ -73,6 +73,7 @@ class SidebarButton(QPushButton):
             sidebar_button_css.format(icon_name)
         )
 
+
 class SidebarButtonSuper(QPushButton):
     def __init__(self, text, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -92,7 +93,6 @@ class SidebarButtonSub(QPushButton):
 
         self.setMinimumHeight(0)
         self.setMaximumHeight(35)
-        self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum))
 
         self.setText(text)
         self.setCursor(QCursor(Qt.PointingHandCursor))

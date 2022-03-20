@@ -50,6 +50,8 @@ class MainWindow(QMainWindow):
             if isinstance(button, SidebarButton):
                 button.setStyleSheet(sidebar_button_css.format(self.button_icon_match[button]))
             elif isinstance(button, SidebarButtonSuper):
+                if button in self.super_sub_match and sender in self.super_sub_match[button]:
+                    button.setObjectName("active")
                 button.setStyleSheet(sidebar_button_super_css.format(self.button_icon_match[button]))
             elif isinstance(button, SidebarButtonSub):
                 button.setStyleSheet(sidebar_button_sub_css)
