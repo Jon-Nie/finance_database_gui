@@ -17,7 +17,7 @@ sidebar_button_css = """
         font-family: Lato;
         font-size: 14px;
         text-align: left;
-        font-weight: bold;
+        font-weight: regular;
         padding: 15px 0px 15px 15px;
         icon: url(icons/{0}_grey.svg);
         qproperty-iconSize: 20px
@@ -26,6 +26,12 @@ sidebar_button_css = """
     QPushButton:hover {{
         color: #FFFFFF;
         background-color: #20263A;
+        icon: url(icons/{0}_white.svg)
+    }}
+
+    QPushButton:pressed {{
+        color: #FFFFFF;
+        background-color: #161A28;
         icon: url(icons/{0}_white.svg)
     }}
 

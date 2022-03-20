@@ -9,7 +9,7 @@ from pages import Pages
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setGeometry(150, 100, 1600, 900)
+        self.setGeometry(150, 50, 1600, 900)
 
         self.central = QWidget(self)
         self.central.setStyleSheet(app_css)
@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
 
         self.layout = QHBoxLayout(self.central)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setSpacing(10)
+        self.layout.setSpacing(0)
 
         self.sidebar = SideBar()
         for button in self.sidebar.buttons:
