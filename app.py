@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setGeometry(150, 50, 1600, 900)
-        #self.setWindowFlags(Qt.Window.FramelessWindowHint)
+        self.setWindowFlags(Qt.Window.FramelessWindowHint)
         
         self.central = QWidget(self)
         self.central.setStyleSheet(app_css)
