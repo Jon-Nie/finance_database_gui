@@ -6,7 +6,7 @@ from top_bar import *
 from sidebar import *
 from top_bar import *
 from pages.pages import Pages
-from stylesheets import app_css
+from stylesheets import app_css, grip_css
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -34,6 +34,21 @@ class MainWindow(QMainWindow):
         self.content.topbar.close_button.clicked.connect(self.close)
 
         self.content.topbar.mouseMoveEvent = self.moveWindow
+        self.size_grip_top_left = QSizeGrip(self)
+        self.size_grip_top_left.setStyleSheet(grip_css)
+        self.size_grip_top_right = QSizeGrip(self)
+        self.size_grip_top_right.setStyleSheet(grip_css)
+        self.size_grip_bottom_right = QSizeGrip(self)
+        self.size_grip_bottom_right.setStyleSheet(grip_css)
+        self.size_grip_bottom_left = QSizeGrip(self)
+        self.size_grip_bottom_left.setStyleSheet(grip_css)
+    
+    def paintEvent(self, event):
+        width, height = 10, 10
+        self.size_grip_top_left.setGeometry(0, 0, width, height)
+        self.size_grip_top_right.setGeometry(self.width()-width, 0, width, height)
+        self.size_grip_bottom_right.setGeometry(self.width()-width, self.height()-height, width, height)
+        self.size_grip_bottom_left.setGeometry(0, self.height()-height, width, height)
 
     def moveWindow(self, event):
         if event.buttons() == Qt.LeftButton:

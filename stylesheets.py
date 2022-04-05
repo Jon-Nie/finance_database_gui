@@ -4,6 +4,12 @@ app_css = """
     }
 """
 
+grip_css = """
+    QSizeGrip {
+        background-color: transparent
+    }
+"""
+
 sidebar_css = """
     QFrame {
         background-color: #386BB7
