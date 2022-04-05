@@ -4,7 +4,8 @@ from PySide2.QtGui import *
 from stylesheets import (
     sidebar_css,
     sidebar_button_css,
-    sidebar_placeholder_css
+    sidebar_placeholder_css,
+    button_frame_css
 )
 
 class SideBar(QFrame):
@@ -47,7 +48,7 @@ class ButtonFrame(QFrame):
         super().__init__(*args, **kwargs)
         
         self.layout = QVBoxLayout(self)
-        self.setStyleSheet("border: None; background-color: #F7F8FD")
+        self.setStyleSheet(button_frame_css)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
 
@@ -79,6 +80,8 @@ class ButtonFrame(QFrame):
         self.placeholder_frame2.setFixedHeight(20)
         self.placeholder_frame2.setStyleSheet(sidebar_placeholder_css)
         self.layout.addWidget(self.placeholder_frame2)
+
+        self.home_button.animateClick()
     
     def change_stylesheet(self):
         for button in self.buttons:
@@ -86,7 +89,10 @@ class ButtonFrame(QFrame):
             button.setStyleSheet(sidebar_button_css.format(button.icon_name))
 
         sender = self.sender()
-        sender.setObjectName("active")
+        if sender == self.home_button:
+            sender.setObjectName("active_blue")
+        else:
+            sender.setObjectName("active")
         sender.setStyleSheet(sidebar_button_css.format(sender.icon_name))
 
         index = self.buttons.index(sender)
