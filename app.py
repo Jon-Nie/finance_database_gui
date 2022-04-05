@@ -6,12 +6,19 @@ from top_bar import *
 from sidebar import *
 from top_bar import *
 from pages.pages import Pages
-from stylesheets import app_css, grip_css
+from stylesheets import (
+    app_css,
+    grip_css,
+    button_frame_css,
+    minimize_css,
+    maximize_css,
+    close_css
+)
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setGeometry(150, 50, 1650, 950)
+        self.setGeometry(350, 150, 1200, 700)
         self.setWindowFlags(Qt.Window.FramelessWindowHint)
         
         self.central = QWidget(self)
@@ -23,7 +30,6 @@ class MainWindow(QMainWindow):
         self.layout.setSpacing(0)
 
         self.sidebar = SideBar()
-
         self.layout.addWidget(self.sidebar)
 
         self.content = Content()
@@ -34,7 +40,6 @@ class MainWindow(QMainWindow):
         self.content.topbar.close_button.clicked.connect(self.close)
 
         self.content.topbar.mouseMoveEvent = self.moveWindow
-
 
         self.size_grip_left = QFrame(self)
         self.size_grip_left.setStyleSheet(grip_css)
@@ -67,6 +72,9 @@ class MainWindow(QMainWindow):
 
         self.size_grip_bottom_left = QSizeGrip(self)
         self.size_grip_bottom_left.setStyleSheet(grip_css)
+
+        for button in self.button_page_match:
+            button.clicked.connect(self.update_page_style)
     
     def paintEvent(self, event):
         width, height = 5, 5
@@ -111,6 +119,39 @@ class MainWindow(QMainWindow):
             self.showNormal()
         else:
             self.showMaximized()
+    
+    @property
+    def button_page_match(self):
+        dct = {
+            self.sidebar.button_frame.home_button: self.content.pages.home_page,
+            self.sidebar.button_frame.equities_button: self.content.pages.equities_page,
+            self.sidebar.button_frame.commodities_button: self.content.pages.commodities_page,
+            self.sidebar.button_frame.economics_button: self.content.pages.economics_page,
+            self.sidebar.button_frame.tracker_button: self.content.pages.tracker_page,
+            self.sidebar.button_frame.backtests_button: self.content.pages.backtests_page
+        }
+        return dct
+    
+    def update_page_style(self):
+        page = self.button_page_match[self.sender()]
+        self.content.pages.setCurrentWidget(page)
+        self.content.setStyleSheet(page.background())
+        if page == self.content.pages.home_page:
+            self.sidebar.button_frame.setObjectName("blue")
+            self.content.topbar.minimize_button.setObjectName("blue")
+            self.content.topbar.maximize_button.setObjectName("blue")
+            self.content.topbar.close_button.setObjectName("blue")
+        else:
+            self.sidebar.button_frame.setObjectName("white")
+            self.content.topbar.minimize_button.setObjectName("white")
+            self.content.topbar.maximize_button.setObjectName("white")
+            self.content.topbar.close_button.setObjectName("white")
+        self.sidebar.button_frame.setStyleSheet(button_frame_css)
+        self.content.topbar.minimize_button.setStyleSheet(minimize_css)
+        self.content.topbar.maximize_button.setStyleSheet(maximize_css)
+        self.content.topbar.close_button.setStyleSheet(close_css)
+
+
 
 class Content(QFrame):
     def __init__(self, *args, **kwargs):
@@ -120,13 +161,12 @@ class Content(QFrame):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
 
-        self.topbar = TopBar(self)
+        self.topbar = TopBar()
         self.layout.addWidget(self.topbar)
 
         self.pages = Pages()
         self.layout.addWidget(self.pages)
-
-
+    
 if __name__ == "__main__":
     app = QApplication()
     window = MainWindow()
