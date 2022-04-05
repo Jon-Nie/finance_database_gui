@@ -46,6 +46,11 @@ sidebar_button_css = """
         icon: url(icons/{0}_blue.svg);
         qproperty-iconSize: 25px
     }}
+    QPushButton#active_blue {{
+        background-color: transparent;
+        icon: url(icons/{0}_white.svg);
+        qproperty-iconSize: 25px
+    }}
     QPushButton#wrapper_top {{
         border-bottom-right-radius: 20px;
     }}
@@ -53,6 +58,18 @@ sidebar_button_css = """
         border-top-right-radius: 20px;
     }}
 """
+
+button_frame_css = (
+    """
+    QFrame {
+        border: None; 
+        background-color: #F7F8FD
+    }
+    QFrame#blue {
+        background-color: #3E75C8
+    }
+    """
+)
 
 topbar_css = """
     QFrame {
@@ -86,6 +103,16 @@ minimize_css = """
     QPushButton:pressed {
         background-color: #babcbf;
     }
+    QPushButton#blue {
+        background-color: #3E75C8;
+        icon: url(icons/minimize_white.svg);
+    }
+    QPushButton#blue:hover {
+        background-color: #2B5DA9;
+    }
+    QPushButton#blue:pressed {
+        background-color: #1D509C;
+    }
 """
 
 maximize_css = """
@@ -101,6 +128,16 @@ maximize_css = """
     QPushButton:pressed {
         background-color: #babcbf;
     }
+    QPushButton#blue {
+        background-color: #3E75C8;
+        icon: url(icons/maximize_white.svg);
+    }
+    QPushButton#blue:hover {
+        background-color: #2B5DA9;
+    }
+    QPushButton#blue:pressed {
+        background-color: #1D509C;
+    }
 """
 
 close_css = """
@@ -113,11 +150,21 @@ close_css = """
     QPushButton:hover {
         background-color: #ed3b3b;
         icon: url(icons/close_white.svg);
-        qproperty-iconSize: 20px
     }
     QPushButton:hover:pressed {
         background-color: #a32222;
         icon: url(icons/close_white.svg);
-        qproperty-iconSize: 20px
+    }
+    QPushButton#blue {
+        background-color: #3E75C8;
+        icon: url(icons/close_white.svg);
+    }
+    QPushButton#blue:hover {
+        background-color: #2B5DA9;
+        icon: url(icons/close_white.svg);
+    }
+    QPushButton#blue:hover:pressed {
+        background-color: #1D509C;
+        icon: url(icons/close_white.svg);
     }
 """
