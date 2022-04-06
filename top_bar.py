@@ -44,6 +44,14 @@ class TopBar(QFrame):
         self.close_button.setStyleSheet(close_css)
         self.layout.addWidget(self.close_button)
 
+    def change_style(self, color):
+        self.minimize_button.setObjectName(color)
+        self.maximize_button.setObjectName(color)
+        self.close_button.setObjectName(color)
+        self.minimize_button.setStyleSheet(minimize_css)
+        self.maximize_button.setStyleSheet(maximize_css)
+        self.close_button.setStyleSheet(close_css)
+
 class SearchBox(QLineEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -54,11 +62,12 @@ class SearchBox(QLineEdit):
         self.setStyleSheet(search_box_css)
 
         data = get_stock_list()
-        self.data = [" | ".join(t) for t in data]
+        self.data = ["   ".join(t) for t in data]
         self.model = QStringListModel(self.data)
         self.completer = QCompleter()
         self.completer.setModel(self.model)
         self.completer.setCaseSensitivity(Qt.CaseSensitivity(0))
+        self.completer.setFilterMode(Qt.MatchContains)
         self.completer.setCompletionColumn(0)
         self.completer.setMaxVisibleItems(15)
         self.setCompleter(self.completer)
