@@ -87,6 +87,7 @@ search_box_css = """
         border: 1px solid #E2E2E2;
         padding: 0px 10px 0px 10px;
         margin: 7px 0px 7px 0px;
+        border-right: 20px
     }
 """
 
@@ -151,7 +152,7 @@ close_css = """
         background-color: #ed3b3b;
         icon: url(icons/close_white.svg);
     }
-    QPushButton:hover:pressed {
+    QPushButton:pressed {
         background-color: #a32222;
         icon: url(icons/close_white.svg);
     }
@@ -163,7 +164,7 @@ close_css = """
         background-color: #2B5DA9;
         icon: url(icons/close_white.svg);
     }
-    QPushButton#blue:hover:pressed {
+    QPushButton#blue:pressed {
         background-color: #1D509C;
         icon: url(icons/close_white.svg);
     }
