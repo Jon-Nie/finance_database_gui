@@ -18,7 +18,7 @@ from stylesheets import (
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setGeometry(350, 150, 1200, 700)
+        self.setGeometry(175, 50, 1600, 900)
         self.setWindowFlags(Qt.Window.FramelessWindowHint)
         
         self.central = QWidget(self)
@@ -128,7 +128,41 @@ class MainWindow(QMainWindow):
             self.sidebar.button_frame.commodities_button: self.content.pages.commodities_page,
             self.sidebar.button_frame.economics_button: self.content.pages.economics_page,
             self.sidebar.button_frame.tracker_button: self.content.pages.tracker_page,
-            self.sidebar.button_frame.backtests_button: self.content.pages.backtests_page
+            self.sidebar.button_frame.backtests_button: self.content.pages.backtests_page,
+
+            self.content.pages.home_page.equities_box.button: self.content.pages.equities_page,
+            self.content.pages.home_page.commodities_box.button: self.content.pages.commodities_page,
+            self.content.pages.home_page.economics_box.button: self.content.pages.economics_page,
+            self.content.pages.home_page.tracker_box.button: self.content.pages.tracker_page,
+            self.content.pages.home_page.backtests_box.button: self.content.pages.backtests_page,
+            self.content.pages.equities_page.stocks_box.button: self.content.pages.stocks_page,
+            self.content.pages.equities_page.industries_box.button: self.content.pages.industries_page,
+            self.content.pages.equities_page.institutionals_box.button: self.content.pages.institutionals_page,
+            self.content.pages.equities_page.analysts_box.button: self.content.pages.analysts_page,
+            self.content.pages.equities_page.factors_box.button: self.content.pages.factors_page,
+        }
+        return dct
+    
+    @property
+    def page_sidebar_match(self):
+        dct = {
+            self.content.pages.home_page: self.sidebar.button_frame.home_button,
+            self.content.pages.equities_page: self.sidebar.button_frame.equities_button,
+            self.content.pages.commodities_page: self.sidebar.button_frame.commodities_button,
+            self.content.pages.economics_page: self.sidebar.button_frame.economics_button,
+            self.content.pages.tracker_page: self.sidebar.button_frame.tracker_button,
+            self.content.pages.backtests_page: self.sidebar.button_frame.backtests_button,
+
+            self.content.pages.equities_page: self.sidebar.button_frame.equities_button,
+            self.content.pages.commodities_page: self.sidebar.button_frame.commodities_button,
+            self.content.pages.economics_page: self.sidebar.button_frame.economics_button,
+            self.content.pages.tracker_page: self.sidebar.button_frame.tracker_button,
+            self.content.pages.backtests_page: self.sidebar.button_frame.backtests_button,
+            self.content.pages.stocks_page: self.sidebar.button_frame.equities_button,
+            self.content.pages.industries_page: self.sidebar.button_frame.equities_button,
+            self.content.pages.institutionals_page: self.sidebar.button_frame.equities_button,
+            self.content.pages.analysts_page: self.sidebar.button_frame.equities_button,
+            self.content.pages.factors_page: self.sidebar.button_frame.equities_button,
         }
         return dct
     
@@ -151,6 +185,7 @@ class MainWindow(QMainWindow):
         self.content.topbar.maximize_button.setStyleSheet(maximize_css)
         self.content.topbar.close_button.setStyleSheet(close_css)
 
+        self.sidebar.button_frame.change_stylesheet_from_outside(self.page_sidebar_match[self.button_page_match[self.sender()]])
 
 
 class Content(QFrame):
