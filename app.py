@@ -74,7 +74,9 @@ class MainWindow(QMainWindow):
         self.size_grip_bottom_left.setStyleSheet(grip_css)
 
         for button in self.button_page_match:
-            button.clicked.connect(self.update_page_style)
+            button.clicked.connect(self.button_to_page_clicked)
+
+        self.content.topbar.search_box.returnPressed.connect(self.searchbox_clicked)
     
     def paintEvent(self, event):
         width, height = 5, 5
@@ -166,24 +168,23 @@ class MainWindow(QMainWindow):
         }
         return dct
     
-    def update_page_style(self):
+    def searchbox_clicked(self):
+        ticker, name, type_ = self.content.topbar.search_box.text().split("   ")
+        ticker, name, type_ = ticker.strip(), name.strip(), type_.strip()
+        if type_ == "Stock":
+            self.content.setCurrentWidget(self.content.pages.stock_page)
+            self.sidebar.button_frame.change_stylesheet_from_outside(self.sidebar.button_frame.equities_button)
+            self.sidebar.button_frame.setObjectName("white")
+            self.sidebar.button_frame.setStyleSheet(button_frame_css)
+    
+    def button_to_page_clicked(self):
         page = self.button_page_match[self.sender()]
-        self.content.pages.setCurrentWidget(page)
-        self.content.setStyleSheet(page.background())
+        self.content.setCurrentWidget(page)
         if page == self.content.pages.home_page:
             self.sidebar.button_frame.setObjectName("blue")
-            self.content.topbar.minimize_button.setObjectName("blue")
-            self.content.topbar.maximize_button.setObjectName("blue")
-            self.content.topbar.close_button.setObjectName("blue")
         else:
             self.sidebar.button_frame.setObjectName("white")
-            self.content.topbar.minimize_button.setObjectName("white")
-            self.content.topbar.maximize_button.setObjectName("white")
-            self.content.topbar.close_button.setObjectName("white")
         self.sidebar.button_frame.setStyleSheet(button_frame_css)
-        self.content.topbar.minimize_button.setStyleSheet(minimize_css)
-        self.content.topbar.maximize_button.setStyleSheet(maximize_css)
-        self.content.topbar.close_button.setStyleSheet(close_css)
 
         self.sidebar.button_frame.change_stylesheet_from_outside(self.page_sidebar_match[self.button_page_match[self.sender()]])
 
@@ -201,7 +202,16 @@ class Content(QFrame):
 
         self.pages = Pages()
         self.layout.addWidget(self.pages)
-    
+
+    def setCurrentWidget(self, page):
+        self.pages.setCurrentWidget(page)
+        self.setStyleSheet(page.background())
+        if page == self.pages.home_page:
+            self.topbar.change_style("blue")
+        else:
+            self.topbar.change_style("white")
+
+
 if __name__ == "__main__":
     app = QApplication()
     window = MainWindow()
