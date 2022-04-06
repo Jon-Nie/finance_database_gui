@@ -1,3 +1,7 @@
+from finance_database import Database
+
+db = Database()
+
 home_page_description = """
 <p>This app covers every aspect an investor is interested in. Browse for stocks, industries, analysts or big money managers and find new ideas.</p>
 Develop your investment case with macroeconomic and stock-related data, backtest it and assess the performance with standard academic techniques.
