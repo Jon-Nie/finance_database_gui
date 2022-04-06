@@ -2,6 +2,20 @@ from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 
+class ContentBox(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(20)
+        shadow_color = QColor("#000000")
+        shadow_color.setAlpha(50)
+        shadow.setColor(shadow_color)
+        shadow.setOffset(QPointF(0, 4))
+        self.setGraphicsEffect(shadow)
+
+        self.setStyleSheet("border: 1px solid black")       
+
 
 class SectionCard(QFrame):
     def __init__(
