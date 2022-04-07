@@ -36,6 +36,9 @@ class SectionCard(QFrame):
 
         self.header = CardHeader(text)
         self.layout.addWidget(self.header)
+        font = QFont()
+        font.setLetterSpacing(QFont.AbsoluteSpacing, 1.05)
+        self.header.setFont(font)
 
         self.description = QLabel(self)
         self.description.setAlignment(Qt.AlignAbsolute)
@@ -44,6 +47,9 @@ class SectionCard(QFrame):
         self.description.setWordWrap(True)
         self.description.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.description.setCursor(Qt.IBeamCursor)
+        font = QFont()
+        font.setLetterSpacing(QFont.AbsoluteSpacing, 1.02)
+        self.description.setFont(font)
         self.layout.addWidget(self.description)
 
         self.button = QPushButton(self)
@@ -159,7 +165,7 @@ class SectionDescription(QLabel):
             """
         )
         font = QFont()
-        font.setLetterSpacing(QFont.AbsoluteSpacing, 1.05)
+        font.setLetterSpacing(QFont.AbsoluteSpacing, 1.02)
         self.setFont(font)
 
 class SectionHeader(QLabel):
@@ -184,3 +190,7 @@ class SectionHeader(QLabel):
             }}
             """
         )
+
+        font = QFont()
+        font.setLetterSpacing(QFont.AbsoluteSpacing, 1.05)
+        self.setFont(font)
