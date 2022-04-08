@@ -10,29 +10,30 @@ class StockPage(Page):
 
         self.layout = QGridLayout(self)
 
-        self.characteristics = CharacteristicsBox()
-        self.layout.addWidget(self.characteristics, 0, 0, 1, 3)
+        self.characteristics_box = CharacteristicsBox()
+        self.layout.addWidget(self.characteristics_box, 0, 0, 1, 3)
+        self.characteristics_box.setFixedHeight(100)
 
-        self.news = NewsBox()
-        self.layout.addWidget(self.news, 0, 3, 1, 3)
+        self.news_box = NewsBox()
+        self.layout.addWidget(self.news_box, 0, 3, 1, 3)
 
-        self.description = DescriptionBox()
-        self.layout.addWidget(self.description, 1, 0, 1, 4)
+        self.description_box = DescriptionBox()
+        self.layout.addWidget(self.description_box, 1, 0, 1, 4)
 
-        self.prices = PriceBox()
-        self.layout.addWidget(self.prices, 1, 4, 2, 2)
+        self.prices_box = PriceBox()
+        self.layout.addWidget(self.prices_box, 1, 4, 2, 2)
 
-        self.analysts = AnalystsBox()
-        self.layout.addWidget(self.analysts, 2, 0, 1, 1)
+        self.analysts_box = AnalystsBox()
+        self.layout.addWidget(self.analysts_box, 2, 0, 1, 1)
 
-        self.value = ValueBox()
-        self.layout.addWidget(self.value, 2, 1, 1, 1)
+        self.value_box = ValueBox()
+        self.layout.addWidget(self.value_box, 2, 1, 1, 1)
 
-        self.profitability = ProfitabilityBox()
-        self.layout.addWidget(self.profitability, 2, 2, 1, 1)
+        self.profitability_box = ProfitabilityBox()
+        self.layout.addWidget(self.profitability_box, 2, 2, 1, 1)
 
-        self.growth = GrowthBox()
-        self.layout.addWidget(self.growth, 2, 3, 1, 1)
+        self.growth_box = GrowthBox()
+        self.layout.addWidget(self.growth_box, 2, 3, 1, 1)
 
 
 class CharacteristicsBox(ContentBox):
@@ -89,8 +90,81 @@ class NewsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.news = []
+
+        self.layout = QHBoxLayout(self)
+
 
 class DescriptionBox(ContentBox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.layout = QGridLayout(self)
+        self.layout.setSpacing(0)
+
+        self.address = DescriptionAddress()
+        self.layout.addWidget(self.address, 0, 0, 1, 1)
+
+        self.industry = DescriptionIndustry()
+        self.layout.addWidget(self.industry, 0, 1, 1, 1)
+        
+        self.executives = DescriptionExcutives()
+        self.layout.addWidget(self.executives, 0, 2, 1, 1)
+
+        self.description = Label()
+        self.layout.addWidget(self.description, 1, 0, 1, 3)
+
+
+class DescriptionAddress(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(0)
+
+        self.country = Label()
+        self.layout.addWidget(self.country)
+        
+        self.city = Label()
+        self.layout.addWidget(self.city)
+
+        self.street = Label()
+        self.layout.addWidget(self.street)
+
+        self.website = Label()
+        self.layout.addWidget(self.website)
+
+        self.employees = Label()
+        self.layout.addWidget(self.employees)
+
+
+class DescriptionIndustry(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(0)
+
+        self.gics = Label("GICS")
+        self.layout.addWidget(self.gics)
+
+        self.gics_sector = QPushButton()
+        self.layout.addWidget(self.gics_sector)
+
+        self.gics_industry = QPushButton()
+        self.layout.addWidget(self.gics_industry)
+
+        self.sic = Label("SIC")
+        self.layout.addWidget(self.sic)
+
+        self.sic_division = QPushButton()
+        self.layout.addWidget(self.sic_division)
+
+        self.sic_industry = QPushButton()
+        self.layout.addWidget(self.sic_industry)
+
+
+class DescriptionExcutives(QFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -104,17 +178,81 @@ class AnalystsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.abr = None
+        self.average_price_target = None
+        self.lowest_price_target = None
+        self._highest_target = None
+
+
+class FactorBoxItem(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(0)
+
+        self.value = Label()
+        self.layout.addWidget(self.value)
+
+        self.name = Label()
+        self.layout.addWidget(self.name)
+
 
 class ValueBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(0)
+
+        self.header = Label("Value")
+        self.layout.addWidget(self.header)
+
+        self.ey = FactorBoxItem()
+        self.layout.addWidget(self.ey)
+
+        self.pb = FactorBoxItem()
+        self.layout.addWidget(self.pb)
+
+        self.ps = FactorBoxItem()
+        self.layout.addWidget(self.ps)
 
 
 class ProfitabilityBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(0)
+
+        self.header = Label("Profitability")
+        self.layout.addWidget(self.header)
+
+        self.roe = FactorBoxItem()
+        self.layout.addWidget(self.roe)
+
+        self.roa = FactorBoxItem()
+        self.layout.addWidget(self.roa)
+
+        self.margin = FactorBoxItem()
+        self.layout.addWidget(self.margin)
+
 
 class GrowthBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(0)
+
+        self.header = Label("Growth")
+        self.layout.addWidget(self.header)
+        
+        self.earnings_growth = FactorBoxItem()
+        self.layout.addWidget(self.earnings_growth)
+
+        self.revenue_growth = FactorBoxItem()
+        self.layout.addWidget(self.revenue_growth)
+
+        self.reinvestment_rate = FactorBoxItem()
+        self.layout.addWidget(self.reinvestment_rate)
