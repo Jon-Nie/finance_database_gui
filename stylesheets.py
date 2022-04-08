@@ -87,7 +87,7 @@ search_box_css = """
         border: 1px solid #E2E2E2;
         padding: 0px 10px 0px 10px;
         margin: 7px 0px 7px 0px;
-        border-right: 20px
+        border-right: 20px;
     }
 """
 

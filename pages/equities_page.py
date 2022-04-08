@@ -40,7 +40,7 @@ class EquitiesPage(Page):
 
         self.analysts_box = SectionCard(
             color="white",
-            text="Analysts",
+            text="Institutionals",
             description="See, how big money managers performed in the past and what their portfolios look like.",
             icon="stocks"
         )
@@ -48,7 +48,7 @@ class EquitiesPage(Page):
 
         self.institutionals_box = SectionCard(
             color="white",
-            text="Institutionals",
+            text="Analysts",
             description="Distinguish good and bad analysts and explore, what stocks they recommend and how accurate their recommendations were.",
             icon="stocks"
         )

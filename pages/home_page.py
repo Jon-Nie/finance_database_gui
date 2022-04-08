@@ -40,7 +40,7 @@ class HomePage(Page):
 
         self.economics_box = SectionCard(
             color="blue",
-            text="Economics",
+            text="Macroeconomics",
             description="Explore a rich dataset of macroeconomic variables and build your investment thesis upon it.",
             icon="stocks"
         )
