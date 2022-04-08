@@ -9,12 +9,12 @@ def get_stock_list() -> list:
     data = cur.execute(
         "SELECT ticker, yahoo_name FROM securities WHERE id IN (SELECT security_id FROM companies)"
     ).fetchall()
+    data_filtered = []
     for index, item in enumerate(data):
         if item[1] is None:
-            data[index] = (item[0], "None", "Stock")
-        else:
-            data[index] = (item[0], item[1], "Stock")
-    return data
+            continue
+        data_filtered.append((item[0], item[1], "Stock"))
+    return data_filtered
 
 
 def get_company_profile(ticker) -> dict:
