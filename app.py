@@ -14,6 +14,7 @@ from stylesheets import (
     maximize_css,
     close_css
 )
+from models import StockData
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -77,6 +78,9 @@ class MainWindow(QMainWindow):
             button.clicked.connect(self.button_to_page_clicked)
 
         self.content.topbar.search_box.returnPressed.connect(self.searchbox_clicked)
+        
+        self.model = StockData()
+        self.set_model(self.model)
     
     def paintEvent(self, event):
         width, height = 5, 5
@@ -173,7 +177,9 @@ class MainWindow(QMainWindow):
         ticker, name, type_ = ticker.strip(), name.strip(), type_.strip()
         if type_ == "Stock":
             self.content.setCurrentWidget(self.content.pages.stock_page)
-            self.sidebar.button_frame.change_stylesheet_from_outside(self.sidebar.button_frame.equities_button)
+            self.model.setData(self.model.index(0, 0, QModelIndex()), ticker)
+
+            self.sidebar.button_frame.change_stylesheet(self.sidebar.button_frame.equities_button)
             self.sidebar.button_frame.setObjectName("white")
             self.sidebar.button_frame.setStyleSheet(button_frame_css)
     
@@ -187,6 +193,15 @@ class MainWindow(QMainWindow):
         self.sidebar.button_frame.setStyleSheet(button_frame_css)
 
         self.sidebar.button_frame.change_stylesheet_from_outside(self.page_sidebar_match[self.button_page_match[self.sender()]])
+
+    def set_model(self, model):
+        self.mapper = QDataWidgetMapper(self)
+        self.mapper.setModel(model)
+        self.mapper.setOrientation(Qt.Vertical)
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics.name, 1, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics.ticker.value, 0, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics.isin.value, 2, b"text")
+        self.mapper.toFirst()
 
 
 class Content(QFrame):
@@ -215,5 +230,6 @@ class Content(QFrame):
 if __name__ == "__main__":
     app = QApplication()
     window = MainWindow()
+    window.show()
     window.show()
     sys.exit(app.exec_())
