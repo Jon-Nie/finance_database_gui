@@ -9,10 +9,7 @@ from pages.pages import Pages
 from stylesheets import (
     app_css,
     grip_css,
-    button_frame_css,
-    minimize_css,
-    maximize_css,
-    close_css
+    button_frame_css
 )
 from models import StockData
 
@@ -177,11 +174,12 @@ class MainWindow(QMainWindow):
         ticker, name, type_ = ticker.strip(), name.strip(), type_.strip()
         if type_ == "Stock":
             self.content.setCurrentWidget(self.content.pages.stock_page)
-            self.model.setData(self.model.index(0, 0, QModelIndex()), ticker)
+            self.model.setData(self.model.index(-1, -1, QModelIndex()), ticker)
 
             self.sidebar.button_frame.change_stylesheet(self.sidebar.button_frame.equities_button)
             self.sidebar.button_frame.setObjectName("white")
             self.sidebar.button_frame.setStyleSheet(button_frame_css)
+        self.content.topbar.search_box.clear()
     
     def button_to_page_clicked(self):
         page = self.button_page_match[self.sender()]
@@ -192,15 +190,31 @@ class MainWindow(QMainWindow):
             self.sidebar.button_frame.setObjectName("white")
         self.sidebar.button_frame.setStyleSheet(button_frame_css)
 
-        self.sidebar.button_frame.change_stylesheet_from_outside(self.page_sidebar_match[self.button_page_match[self.sender()]])
+        self.sidebar.button_frame.change_stylesheet(self.page_sidebar_match[self.button_page_match[self.sender()]])
 
     def set_model(self, model):
         self.mapper = QDataWidgetMapper(self)
         self.mapper.setModel(model)
         self.mapper.setOrientation(Qt.Vertical)
-        self.mapper.addMapping(self.content.pages.stock_page.characteristics.name, 1, b"text")
-        self.mapper.addMapping(self.content.pages.stock_page.characteristics.ticker.value, 0, b"text")
-        self.mapper.addMapping(self.content.pages.stock_page.characteristics.isin.value, 2, b"text")
+        self.model.update_logo.connect(self.content.pages.stock_page.characteristics_box.logo.update_logo)
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.name, 1, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.ticker.value, 2, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.isin.value, 3, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.last_price.value, 4, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.market_cap.value, 5, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.pe_ratio.value, 6, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.div_yield.value, 7, b"text")
+        self.model.update_country_icon.connect(self.content.pages.stock_page.description_box.address.country.update_icon)
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.address.country, 9, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.address.city, 10, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.address.street, 11, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.address.website, 12, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.address.employees, 13, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.gics_sector, 14, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.gics_industry, 15, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.sic_division, 16, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.sic_industry, 17, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.description, 19, b"text")
         self.mapper.toFirst()
 
 

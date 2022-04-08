@@ -43,7 +43,7 @@ class CharacteristicsBox(ContentBox):
         self.layout = QGridLayout(self)
         self.layout.setSpacing(0)
         
-        self.logo = Label()
+        self.logo = Logo()
         self.layout.addWidget(self.logo, 0, 0, 2, 2)
 
         self.name = Label()
@@ -52,27 +52,37 @@ class CharacteristicsBox(ContentBox):
         self.update_button = QPushButton()
         self.layout.addWidget(self.update_button, 1, 2, 1, 1)
 
-        self.ticker = CharacteristicsItem()
+        self.ticker = CharacteristicsItem("Ticker")
         self.layout.addWidget(self.ticker, 1, 3, 1, 1)
 
-        self.isin = CharacteristicsItem()
+        self.isin = CharacteristicsItem("ISIN")
         self.layout.addWidget(self.isin, 1, 4, 1, 1)
 
-        self.last_price = CharacteristicsItem()
+        self.last_price = CharacteristicsItem("Last Price")
         self.layout.addWidget(self.last_price, 1, 5, 1, 1)
 
-        self.market_cap = CharacteristicsItem()
+        self.market_cap = CharacteristicsItem("Market Cap")
         self.layout.addWidget(self.market_cap, 1, 6, 1, 1)
 
-        self.pe_ratio = CharacteristicsItem()
+        self.pe_ratio = CharacteristicsItem("P/E Ratio")
         self.layout.addWidget(self.pe_ratio, 1, 7, 1, 1)
 
-        self.div_yield = CharacteristicsItem()
+        self.div_yield = CharacteristicsItem("Dividend Yield")
         self.layout.addWidget(self.div_yield, 1, 8, 1, 1)
+
+class Logo(QLabel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.icon = QPixmap()
+
+    @Slot(bytes)
+    def update_logo(self, logo):
+        self.icon.loadFromData(logo)
+        self.setPixmap(self.icon)
 
 
 class CharacteristicsItem(QFrame):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.layout = QVBoxLayout(self)
@@ -82,7 +92,7 @@ class CharacteristicsItem(QFrame):
         self.value = Label()
         self.layout.addWidget(self.value)
 
-        self.name = Label()
+        self.name = Label(name)
         self.layout.addWidget(self.name)
 
 
@@ -112,6 +122,8 @@ class DescriptionBox(ContentBox):
         self.layout.addWidget(self.executives, 0, 2, 1, 1)
 
         self.description = Label()
+        self.description.setWordWrap(True)
+        self.description.setAlignment(Qt.AlignJustify)
         self.layout.addWidget(self.description, 1, 0, 1, 3)
 
 
@@ -122,7 +134,7 @@ class DescriptionAddress(QFrame):
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(0)
 
-        self.country = Label()
+        self.country = Country()
         self.layout.addWidget(self.country)
         
         self.city = Label()
@@ -136,6 +148,16 @@ class DescriptionAddress(QFrame):
 
         self.employees = Label()
         self.layout.addWidget(self.employees)
+
+class Country(QPushButton):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.icon = QPixmap()
+
+    @Slot(bytes)
+    def update_icon(self, logo):
+        self.icon.loadFromData(logo)
+        self.setIcon(self.icon)
 
 
 class DescriptionIndustry(QFrame):
