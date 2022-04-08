@@ -74,7 +74,7 @@ class ButtonFrame(QFrame):
         )
         for button in self.buttons:
             self.layout.addWidget(button)
-            button.clicked.connect(self.change_stylesheet)
+            button.clicked.connect(lambda: self.change_stylesheet(button))
 
         self.placeholder_frame2 = QFrame()
         self.placeholder_frame2.setFixedHeight(20)
@@ -83,37 +83,14 @@ class ButtonFrame(QFrame):
 
         self.home_button.animateClick()
     
-    def change_stylesheet(self):
-        sender = self.sender()
-        index = self.buttons.index(sender)
-
-        for button in self.buttons:
-            if button == sender:
-                if sender == self.home_button:
-                    sender.setObjectName("active_blue")
-                else:
-                    sender.setObjectName("active")
-            else:
-                button.setObjectName("inactive")
-            button.setStyleSheet(sidebar_button_css.format(button.icon_name))
+    def change_stylesheet(self, button=None):
+        if button is None:
+            sender = self.sender()
+        else:
+            sender = button
         
-        if index == 0:
-            self.placeholder_frame1.setObjectName("wrapper_top")
-        else:
-            self.placeholder_frame1.setObjectName("inactive")
-            self.buttons[index-1].setObjectName("wrapper_top")
-            self.buttons[index-1].setStyleSheet(sidebar_button_css.format(self.buttons[index-1].icon_name))
-        if index == len(self.buttons)-1:
-            self.placeholder_frame2.setObjectName("wrapper_bottom")
-        else:
-            self.placeholder_frame2.setObjectName("inactive")
-            self.buttons[index+1].setObjectName("wrapper_bottom")
-            self.buttons[index+1].setStyleSheet(sidebar_button_css.format(self.buttons[index+1].icon_name))
-        self.placeholder_frame1.setStyleSheet(sidebar_placeholder_css)
-        self.placeholder_frame2.setStyleSheet(sidebar_placeholder_css)
-
-    def change_stylesheet_from_outside(self, sender):
         index = self.buttons.index(sender)
+
         for button in self.buttons:
             if button == sender:
                 if sender == self.home_button:
