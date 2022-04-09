@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         self.content.topbar.search_box.returnPressed.connect(self.searchbox_clicked)
         
         self.model = StockData()
-        self.set_model(self.model)
+        self.set_connections(self.model)
     
     def paintEvent(self, event):
         width, height = 5, 5
@@ -192,7 +192,7 @@ class MainWindow(QMainWindow):
 
         self.sidebar.button_frame.change_stylesheet(self.page_sidebar_match[self.button_page_match[self.sender()]])
 
-    def set_model(self, model):
+    def set_connections(self, model):
         self.mapper = QDataWidgetMapper(self)
         self.mapper.setModel(model)
         self.mapper.setOrientation(Qt.Vertical)
@@ -203,7 +203,7 @@ class MainWindow(QMainWindow):
         self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.last_price.value, 4, b"text")
         self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.market_cap.value, 5, b"text")
         self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.pe_ratio.value, 6, b"text")
-        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.div_yield.value, 7, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.characteristics_box.payout_yield.value, 7, b"text")
         self.model.update_country_icon.connect(self.content.pages.stock_page.description_box.address.country.update_icon)
         self.mapper.addMapping(self.content.pages.stock_page.description_box.address.country, 9, b"text")
         self.mapper.addMapping(self.content.pages.stock_page.description_box.address.city, 10, b"text")
@@ -214,7 +214,10 @@ class MainWindow(QMainWindow):
         self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.gics_industry, 15, b"text")
         self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.sic_division, 16, b"text")
         self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.sic_industry, 17, b"text")
-        self.mapper.addMapping(self.content.pages.stock_page.description_box.description, 19, b"text")
+        self.mapper.addMapping(self.content.pages.stock_page.description_box.description.description, 18, b"text")
+        self.model.update_value.connect(self.content.pages.stock_page.value_box.update_data)
+        self.model.update_profitability.connect(self.content.pages.stock_page.profitability_box.update_data)
+        self.model.update_growth.connect(self.content.pages.stock_page.growth_box.update_data)
         self.mapper.toFirst()
 
 
