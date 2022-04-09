@@ -20,9 +20,16 @@ class ContentBox(QFrame):
         shadow.setColor(shadow_color)
         shadow.setOffset(QPointF(0, 4))
         self.setGraphicsEffect(shadow)
-
-        self.setStyleSheet("border: 1px solid black")       
-
+        
+        self.setStyleSheet(
+            """
+            QFrame {
+                border: None;
+                border-radius: 10px;
+                background-color: #FFFFFF;
+            }
+            """
+        )
 
 class SectionCard(QFrame):
     def __init__(
