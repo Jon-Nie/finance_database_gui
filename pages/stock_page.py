@@ -9,7 +9,7 @@ class StockPage(Page):
         super().__init__(*args, **kwargs)
 
         self.layout = QVBoxLayout(self)
-        self.layout.setSpacing(10)
+        self.layout.setSpacing(20)
         self.layout.setContentsMargins(50, 50, 50, 50)
 
         self.upper_layout = QHBoxLayout()
@@ -19,7 +19,6 @@ class StockPage(Page):
 
         self.characteristics_box = CharacteristicsBox()
         self.upper_layout.addWidget(self.characteristics_box, 0)
-        self.characteristics_box.setFixedHeight(120)
 
         self.news_box = NewsBox()
         self.news_box.setMaximumWidth(9999)
@@ -35,18 +34,19 @@ class StockPage(Page):
         self.analysts_box = AnalystsBox()
         self.lower_layout.addWidget(self.analysts_box, 1, 0, 1, 1)
 
-        self.value_box = ValueBox()
+        self.value_box = ValueBox("Value", "Earnings Yield", "Price-to-Book", "Price-to-Sales")
         self.lower_layout.addWidget(self.value_box, 1, 1, 1, 1)
 
-        self.profitability_box = ProfitabilityBox()
+        self.profitability_box = ProfitabilityBox("Profitability", "Return on Equity", "Return on Assets", "Net Margin")
         self.lower_layout.addWidget(self.profitability_box, 1, 2, 1, 1)
 
-        self.growth_box = GrowthBox()
+        self.growth_box = GrowthBox("Growth (3yr)", "Revenue Growth", "Earnings Growth", "Reinvestment Rate")
         self.lower_layout.addWidget(self.growth_box, 1, 3, 1, 1)
 
 class CharacteristicsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedHeight(120)
 
         self.layout = QGridLayout(self)
         self.setContentsMargins(20, 10, 20, 10)
@@ -61,7 +61,7 @@ class CharacteristicsBox(ContentBox):
             """
             QLabel {
                 font-family: Lato;
-                font-size: 26px;
+                font-size: 22px;
                 font-weight: 900;
                 color: #333333
             }
@@ -89,10 +89,12 @@ class CharacteristicsBox(ContentBox):
         self.update_button = QPushButton()
         self.layout.addWidget(self.update_button, 1, 8, 1, 1)
 
+
 class Logo(QLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.icon = QPixmap()
+        self.setStyleSheet("Qlabel {margin-right:20px}")
 
     @Slot(bytes)
     def update_logo(self, logo):
@@ -139,6 +141,7 @@ class CharacteristicsItem(QFrame):
 class NewsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedHeight(120)
 
         self.news = []
 
@@ -151,7 +154,7 @@ class DescriptionBox(ContentBox):
 
         self.layout = QGridLayout(self)
         self.layout.setContentsMargins(40, 30, 40, 30)
-        self.layout.setSpacing(0)
+        self.layout.setSpacing(20)
 
         self.address = DescriptionAddress()
         self.layout.addWidget(self.address, 0, 0, 1, 1)
@@ -162,19 +165,33 @@ class DescriptionBox(ContentBox):
         self.executives = DescriptionExcutives()
         self.layout.addWidget(self.executives, 0, 2, 1, 1)
 
+        self.separator = QFrame()
+        self.separator.setFixedHeight(1)
+        self.separator.setStyleSheet(
+            """
+            QFrame {
+                background-color: #BCBCBC;
+                margin-left: 10px;
+                margin-right: 10px
+            }
+            """
+        )
+        self.layout.addWidget(self.separator, 1, 0, 1, 3)
+
         self.description = BusinessDescription()
-        self.layout.addWidget(self.description, 1, 0, 1, 3)
+        self.layout.addWidget(self.description, 2, 0, 1, 3)
 
 
 class BusinessDescription(QScrollArea):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setWidgetResizable(True)
+        self.verticalScrollBar().setSingleStep(2)
 
         self.description = Label()
         self.description.setWordWrap(True)
         self.description.setAlignment(Qt.AlignJustify)
-        self.description.setStyleSheet(
+        self.setStyleSheet(
             """
             QLabel {
                 font-family: Lato;
@@ -183,6 +200,14 @@ class BusinessDescription(QScrollArea):
                 color: #333333;
                 padding-left: 10px;
                 padding-right: 20px
+            }
+            QScrollBar:vertical {
+                background-color: #FFFFFF;
+                border-radius: 1px;
+                width: 5px;
+            }
+            QScrollBar::handle:vertical {
+                background: #C4C4C4;
             }
             """
         )
@@ -315,6 +340,7 @@ class PriceBox(ContentBox):
 class AnalystsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedSize(200, 275)
 
         self.abr = None
         self.average_price_target = None
@@ -323,74 +349,178 @@ class AnalystsBox(ContentBox):
 
 
 class FactorBoxItem(QFrame):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(0)
 
         self.value = Label()
+        self.value.setObjectName("value")
+        self.value.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.value)
 
-        self.name = Label()
+        self.name = Label(name)
+        self.name.setObjectName("name")
+        self.name.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.name)
 
+        self.setStyleSheet(
+            """
+            QLabel {
+                font-family: Lato;
+                font-weight: 600
+            }
+            QLabel#value {
+                font-size: 14px;
+                text-align: right;
+                color: #333333;
+            }
+            QLabel#name {
+                font-size: 12px;
+                color: #696969
+            }
+            """
+        )
 
-class ValueBox(ContentBox):
-    def __init__(self, *args, **kwargs):
+
+class FactorBox(ContentBox):
+    def __init__(self, header, var1, var2, var3, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedSize(200, 275)
+        self.color = "black"
 
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(0)
 
-        self.header = Label("Value")
+        self.header = Label()
+        self.header.setText(header)
+        self.header.setAlignment(Qt.AlignCenter)
+        self.header.setStyleSheet(
+            """
+            QLabel {
+                background-color: transparent;
+                font-family: Lato;
+                font-size: 18px;
+                font-weight: 600;
+                color: #333333
+            }
+            """
+        )
         self.layout.addWidget(self.header)
 
-        self.ey = FactorBoxItem()
-        self.layout.addWidget(self.ey)
+        self.var1 = FactorBoxItem(var1)
+        self.layout.addWidget(self.var1)
 
-        self.pb = FactorBoxItem()
-        self.layout.addWidget(self.pb)
+        self.var2 = FactorBoxItem(var2)
+        self.layout.addWidget(self.var2)
 
-        self.ps = FactorBoxItem()
-        self.layout.addWidget(self.ps)
+        self.var3 = FactorBoxItem(var3)
+        self.layout.addWidget(self.var3)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QColor(self.color))
+
+        painter.drawRect(QRectF(10, 0, self.width()-20, 10))
+        painter.drawChord(QRectF(0, 0, 20, 20), -180*16, -180*16)
+        painter.drawChord(QRectF(self.width()-20, 0, 20, 20), -180*16, -180*16)
+
+        #painter.end()
 
 
-class ProfitabilityBox(ContentBox):
+class ValueBox(FactorBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.layout = QVBoxLayout(self)
-        self.layout.setSpacing(0)
+    @Slot(bytes)
+    def update_data(self, ey, pb, ps):
+        score = 0
+        if ey > 0.05:
+            score +=1
+        elif ey < 0.3:
+            score -= 1
+        if pb < 2:
+            score +=1
+        elif pb > 5:
+            score -= 1
+        if ps < 2:
+            score +=1
+        elif ps > 5:
+            score -= 1
 
-        self.header = Label("Profitability")
-        self.layout.addWidget(self.header)
-
-        self.roe = FactorBoxItem()
-        self.layout.addWidget(self.roe)
-
-        self.roa = FactorBoxItem()
-        self.layout.addWidget(self.roa)
-
-        self.margin = FactorBoxItem()
-        self.layout.addWidget(self.margin)
-
-
-class GrowthBox(ContentBox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.layout = QVBoxLayout(self)
-        self.layout.setSpacing(0)
-
-        self.header = Label("Growth")
-        self.layout.addWidget(self.header)
+        if score >= 1:
+            self.color = "#5FB538"
+        elif score < -1:
+            self.color = "#AE3D3D"
+        else:
+            self.color = "#FFD43C"
         
-        self.earnings_growth = FactorBoxItem()
-        self.layout.addWidget(self.earnings_growth)
+        self.var1.value.setText(f"{ey:.2%}")
+        self.var2.value.setText(f"{pb:.2f}")
+        self.var3.value.setText(f"{ps:.2f}")
 
-        self.revenue_growth = FactorBoxItem()
-        self.layout.addWidget(self.revenue_growth)
 
-        self.reinvestment_rate = FactorBoxItem()
-        self.layout.addWidget(self.reinvestment_rate)
+class ProfitabilityBox(FactorBox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @Slot(bytes)
+    def update_data(self, roe, roa, margin):
+        score = 0
+        if roe > 0.15:
+            score +=1
+        elif roe < 0.08:
+            score -= 1
+        if roa > 0.1:
+            score +=1
+        elif roa < 0.05:
+            score -= 1
+        if margin > 0.1:
+            score +=1
+        elif margin < 0.03:
+            score -= 1
+
+        if score >= 1:
+            self.color = "#5FB538"
+        elif score < -1:
+            self.color = "#AE3D3D"
+        else:
+            self.color = "#FFD43C"
+        self.var1.value.setText(f"{roe:.2%}")
+        self.var2.value.setText(f"{roa:.2%}")
+        self.var3.value.setText(f"{margin:.2%}")
+
+
+class GrowthBox(FactorBox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @Slot(bytes)
+    def update_data(self, rg, eg, rr):
+        score = 0
+        if rg > 0.1:
+            score +=1
+        elif rg < 0:
+            score -= 1
+        if eg > 0.1:
+            score +=1
+        elif eg < 0:
+            score -= 1
+        if rr > 0.5:
+            score +=1
+        elif rr < 0.25:
+            score -= 1
+
+        if score >= 1:
+            self.color = "#5FB538"
+        elif score < -1:
+            self.color = "#AE3D3D"
+        else:
+            self.color = "#FFD43C"
+
+        self.var1.value.setText(f"{rg:.2%}")
+        self.var2.value.setText(f"{eg:.2%}")
+        self.var3.value.setText(f"{rr:.2%}")
