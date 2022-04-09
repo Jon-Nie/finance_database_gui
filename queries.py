@@ -185,10 +185,10 @@ def get_time_series_data(ticker=None, isin=None) -> pd.DataFrame:
 def get_stock_data(ticker) -> list:
     data = get_company_profile(ticker)
     news = get_news(ticker)
-    price_data = get_time_series_data(ticker)
-    index = price_data.index
-    data.insert(4, f"${price_data.loc[index[-1], 'adj_close']:.2f}")
-    market_cap = price_data.loc[index[-1], "market_cap"]
+    time_series = get_time_series_data(ticker)
+    index = time_series.index
+    data.insert(4, f"${time_series.loc[index[-1], 'adj_close']:.2f}")
+    market_cap = time_series.loc[index[-1], "market_cap"]
     if market_cap >= 1_000_000_000_000:
         market_cap /= 1_000_000_000_000
         digit = "T"
@@ -199,13 +199,15 @@ def get_stock_data(ticker) -> list:
         market_cap /= 1_000_000
         digit = "M"
     data.insert(5, f"${market_cap:.2f}{digit}")
-    data.insert(6, f"{price_data.loc[index[-1], 'p/e']:.2f}")
-    data.insert(7, f"{price_data.loc[index[-1], 'payout_yield']:.2%}")
+    data.insert(6, f"{time_series.loc[index[-1], 'p/e']:.2f}")
+    data.insert(7, f"{time_series.loc[index[-1], 'payout_yield']:.2%}")
     data.insert(19, news)
     
     if data[13] is None:
         data[13] = ""
     else:
         data[13] = f"{data[13]:,d} Employees".replace(",", ".")
+    
+    data.insert(20, time_series)
 
     return data

@@ -6,6 +6,9 @@ class StockData(QAbstractListModel):
     update_logo = Signal(bytes)
     update_country_icon = Signal(bytes)
     update_news = Signal(list)
+    update_value = Signal(float, float, float)
+    update_profitability = Signal(float, float, float)
+    update_growth = Signal(float, float, float)
 
     def __init__(self) -> None:
         super().__init__()
@@ -26,6 +29,20 @@ class StockData(QAbstractListModel):
                 self.dataChanged.emit(index, index)
             self.update_logo.emit(self.stockdata[0])
             self.update_country_icon.emit(self.stockdata[8])
-            self.update_news.emit(self.stockdata[19])
+            self.update_value.emit(
+                (1/self.stockdata[20]["p/e"][-1]),
+                self.stockdata[20]["p/b"][-1],
+                self.stockdata[20]["p/s"][-1]
+            )
+            self.update_profitability.emit(
+                self.stockdata[20]["roe ttm"][-1],
+                self.stockdata[20]["roa ttm"][-1],
+                self.stockdata[20]["net margin ttm"][-1]
+            )
+            self.update_growth.emit(
+                self.stockdata[20]["revenue growth ttm"][-1],
+                self.stockdata[20]["net income growth ttm"][-1],
+                self.stockdata[20]["reinvestment rate ttm"][-1]
+            )
             return True
         return False
