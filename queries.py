@@ -159,7 +159,6 @@ def get_time_series_data(ticker=None, isin=None) -> pd.DataFrame:
         fundamentals[f"reinvestment rate{scope}"] = 1+(fundamentals[f"total dividends paid{scope}"].replace(np.NaN, 0)+fundamentals[f"total stock issued/repurchased{scope}"].replace(np.NaN, 0))  / fundamentals[f"net income{scope}"]
 
     df = pd.concat([prices, fundamentals], axis=1)
-
     df.index = pd.to_datetime(df.index, unit="s")
     df = df.sort_index()
 
@@ -170,17 +169,14 @@ def get_time_series_data(ticker=None, isin=None) -> pd.DataFrame:
         if col in ("close", "adj_close", "split", "simple_return", "dividends"):
             continue
         df[col] = df[col].ffill()
-
-    for variable in macrotrends_variables:
-        df[variable] = df[variable].fillna(0)
     
     df = df.copy()
     df["market_cap"] = df["close"] * df["diluted shares outstanding"]
-    df["p/e"] = df["market_cap"] / df["net income ttm"]
+    df["p/e"] = df["market_cap"] / df["income from continuous operations ttm"]
     df["p/cf"] = df["market_cap"] / df["cashflow from operating activities ttm"]
     df["p/b"] = df["market_cap"] / df["total shareholders equity ttm"]
     df["p/s"] = df["market_cap"] / df["revenue ttm"]
-    df["div_yield"] = df["dividends"].rolling(250).sum() / df["close"]
+    df["payout_yield"] = -(df["total dividends paid ttm"].fillna(0) + df["common stock issued/repurchased ttm"].fillna(0)) / df["market_cap"]
     
     df = df[df["close"].notna()]
     
@@ -204,7 +200,12 @@ def get_stock_data(ticker) -> list:
         digit = "M"
     data.insert(5, f"${market_cap:.2f}{digit}")
     data.insert(6, f"{price_data.loc[index[-1], 'p/e']:.2f}")
-    data.insert(7, f"{price_data.loc[index[-1], 'div_yield']:.2%}")
-    data.insert(18, news)
+    data.insert(7, f"{price_data.loc[index[-1], 'payout_yield']:.2%}")
+    data.insert(19, news)
+    
+    if data[13] is None:
+        data[13] = ""
+    else:
+        data[13] = f"{data[13]:,d} Employees".replace(",", ".")
 
     return data
