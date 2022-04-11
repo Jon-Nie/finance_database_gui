@@ -16,7 +16,7 @@ from models import StockData
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setGeometry(175, 50, 1600, 900)
+        self.setGeometry(175, 50, 1450, 860)
         self.setWindowFlags(Qt.Window.FramelessWindowHint)
         
         self.central = QWidget(self)

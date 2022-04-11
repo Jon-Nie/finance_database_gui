@@ -9,10 +9,10 @@ class StockPage(Page):
         super().__init__(*args, **kwargs)
 
         self.layout = QVBoxLayout(self)
-        self.layout.setSpacing(20)
         self.layout.setContentsMargins(50, 50, 50, 50)
 
         self.upper_layout = QGridLayout()
+        self.upper_layout.setSpacing(20)
         self.layout.addLayout(self.upper_layout)
         self.lower_layout = QHBoxLayout()
         self.layout.addLayout(self.lower_layout)
@@ -30,16 +30,16 @@ class StockPage(Page):
         self.upper_layout.addWidget(self.prices_box, 0, 2, 2, 1)
 
         self.analysts_box = AnalystsBox()
-        self.lower_layout.addWidget(self.analysts_box, 0)
+        self.lower_layout.addWidget(self.analysts_box)
 
         self.value_box = ValueBox("Value", "Earnings Yield", "Price-to-Book", "Price-to-Sales")
-        self.lower_layout.addWidget(self.value_box, 1)
+        self.lower_layout.addWidget(self.value_box)
 
         self.profitability_box = ProfitabilityBox("Profitability", "Return on Equity", "Return on Assets", "Net Margin")
-        self.lower_layout.addWidget(self.profitability_box, 2)
+        self.lower_layout.addWidget(self.profitability_box)
 
         self.growth_box = GrowthBox("Growth (3yr)", "Revenue Growth", "Earnings Growth", "Reinvestment Rate")
-        self.lower_layout.addWidget(self.growth_box,3)
+        self.lower_layout.addWidget(self.growth_box)
 
         self.fundamental_view = FundamentalView()
         self.lower_layout.addWidget(self.fundamental_view)
@@ -91,12 +91,15 @@ class CharacteristicsBox(ContentBox):
         self.update_button = QPushButton()
         self.layout.addWidget(self.update_button, 1, 8, 1, 1)
 
+        self.placeholder = QFrame()
+        self.layout.addWidget(self.update_button, 0, 9, 2, 1)
+
 
 class Logo(QLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.icon = QPixmap()
-        self.setStyleSheet("Qlabel {margin-right:20px}")
+        self.setStyleSheet("Qlabel {margin-right:10px}")
 
     @Slot(bytes)
     def update_logo(self, logo):
@@ -142,29 +145,20 @@ class CharacteristicsItem(QFrame):
         )
 
 
-class NewsBox(ContentBox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.news = []
-
-        self.layout = QHBoxLayout(self)
-
-
 class DescriptionBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(850, 300)
+        self.setFixedSize(750, 300)
 
-        self.layout = QGridLayout(self)
+        self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(40, 30, 40, 30)
-        self.layout.setSpacing(20)
+        self.layout.setSpacing(5)
 
         self.address = DescriptionAddress()
-        self.layout.addWidget(self.address, 0, 0, 1, 1)
+        self.layout.addWidget(self.address)
 
         self.industry = DescriptionIndustry()
-        self.layout.addWidget(self.industry, 0, 1, 1, 1)
+        self.layout.addWidget(self.industry)
 
         self.separator = QFrame()
         self.separator.setFixedHeight(1)
@@ -177,17 +171,17 @@ class DescriptionBox(ContentBox):
             }
             """
         )
-        self.layout.addWidget(self.separator, 1, 0, 1, 2)
+        self.layout.addWidget(self.separator)
 
         self.description = BusinessDescription()
-        self.layout.addWidget(self.description, 2, 0, 1, 2)
+        self.layout.addWidget(self.description)
 
 
 class BusinessDescription(QScrollArea):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setWidgetResizable(True)
-        self.verticalScrollBar().setSingleStep(2)
+        self.verticalScrollBar().setSingleStep(5)
 
         self.description = Label()
         self.description.setWordWrap(True)
@@ -196,7 +190,7 @@ class BusinessDescription(QScrollArea):
             """
             QLabel {
                 font-family: Lato;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 400;
                 color: #333333;
                 padding-left: 10px;
@@ -223,35 +217,38 @@ class DescriptionAddress(QFrame):
         self.layout.setVerticalSpacing(0)
         self.layout.setHorizontalSpacing(10)
 
+        self.placeholder = QLabel()
+        self.placeholder.setFixedWidth(200)
+        self.layout.addWidget(self.placeholder, 0, 0, 1, 2)
+
         self.country_logo = CountryLogo()
-        self.layout.addWidget(self.country_logo, 0, 0, 1, 1)
+        self.layout.addWidget(self.country_logo, 0, 1, 1, 1)
 
         self.country_name = Label()
-        self.layout.addWidget(self.country_name, 1, 0, 1, 1)
+        self.layout.addWidget(self.country_name, 1, 1, 1, 1)
         
         self.city = Label()
-        self.layout.addWidget(self.city, 2, 0, 1, 1)
+        self.layout.addWidget(self.city, 0, 2, 1, 1)
 
         self.street = Label()
-        self.layout.addWidget(self.street, 0, 1, 1, 1)
+        self.layout.addWidget(self.street, 1, 2, 1, 1)
 
         self.website = Label()
-        self.layout.addWidget(self.website, 1, 1, 1, 1)
+        self.layout.addWidget(self.website, 0, 3, 1, 1)
 
         self.employees = Label()
-        self.layout.addWidget(self.employees, 2, 1, 1, 1)
+        self.layout.addWidget(self.employees, 1, 3, 1, 1)
 
         self.setStyleSheet(
             """
             QLabel {
                 font-family: Lato;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 500;
                 color: #333333
             }
             """
         )
-        self.layout.addWidget(QFrame(), 3, 0, 1, 2)
 
 class CountryLogo(QLabel):
     def __init__(self, *args, **kwargs):
@@ -262,7 +259,7 @@ class CountryLogo(QLabel):
             """
             QPushButton {
                 font-family: Lato;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 500;
                 color: #333333;
                 text-align: left
@@ -282,39 +279,35 @@ class DescriptionIndustry(QFrame):
         super().__init__(*args, **kwargs)
 
         self.layout = QGridLayout(self)
-        self.layout.setVerticalSpacing(0)
+        self.layout.setVerticalSpacing(5)
         self.layout.setHorizontalSpacing(10)
 
         self.gics = Label("GICS")
         self.gics.setObjectName("header")
-        self.gics.setFixedWidth(200)
         self.layout.addWidget(self.gics, 0, 0, 1, 1)
 
         self.gics_sector = Label()
         self.gics_sector.setObjectName("value")
-        self.gics_sector.setWordWrap(True)
-        self.layout.addWidget(self.gics_sector, 1, 0, 1, 1)
+        self.layout.addWidget(self.gics_sector, 0, 1, 1, 1)
 
         self.gics_industry = Label()
         self.gics_industry.setObjectName("value")
-        self.gics_industry.setWordWrap(True)
-        self.gics_industry.setAlignment(Qt.AlignTop)
-        self.layout.addWidget(self.gics_industry, 2, 0, 1, 1)
+        self.gics_industry.setMinimumWidth(400)
+        self.layout.addWidget(self.gics_industry, 0, 2, 1, 1)
 
         self.sic = Label("SIC")
-        self.sic.setFixedWidth(200)
         self.sic.setObjectName("header")
-        self.layout.addWidget(self.sic, 0, 1, 1, 1)
+        self.layout.addWidget(self.sic, 1, 0, 1, 1)
 
         self.sic_division = Label()
         self.sic_division.setObjectName("value")
-        self.sic_division.setWordWrap(True)
         self.layout.addWidget(self.sic_division, 1, 1, 1, 1)
 
         self.sic_industry = Label()
+        self.sic_industry.setMinimumWidth(400)
         self.sic_industry.setObjectName("value")
         self.sic_industry.setWordWrap(True)
-        self.layout.addWidget(self.sic_industry, 2, 1, 1, 1)
+        self.layout.addWidget(self.sic_industry, 1, 2, 1, 1)
 
         self.setStyleSheet(
             """
@@ -327,12 +320,16 @@ class DescriptionIndustry(QFrame):
                 color: #7E7E7E
             }
             QLabel#value {
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 500;
                 color: #333333
             }
             """
         )
+
+        self.placeholder = QFrame()
+        self.placeholder.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.layout.addWidget(self.placeholder, 0, 3, 2, 1)
 
 
 class DescriptionExcutives(QFrame):
@@ -340,15 +337,26 @@ class DescriptionExcutives(QFrame):
         super().__init__(*args, **kwargs)
 
 
+class NewsBox(ContentBox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFixedWidth(200)
+
+        self.news = []
+
+        self.layout = QHBoxLayout(self)
+
+
 class PriceBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedWidth(370)
 
 
 class AnalystsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(200, 275)
+        self.setFixedSize(200, 220)
 
         self.abr = None
         self.average_price_target = None
@@ -380,7 +388,7 @@ class FactorBoxItem(QFrame):
                 font-weight: 600
             }
             QLabel#value {
-                font-size: 14px;
+                font-size: 13px;
                 text-align: right;
                 color: #333333;
             }
@@ -395,7 +403,7 @@ class FactorBoxItem(QFrame):
 class FactorBox(ContentBox):
     def __init__(self, header, var1, var2, var3, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(180, 260)
+        self.setFixedSize(160, 220)
         self.color = "black"
 
         self.layout = QVBoxLayout(self)
@@ -403,7 +411,7 @@ class FactorBox(ContentBox):
 
         self.placeholder = QFrame()
         self.placeholder.setStyleSheet("background-color: transparent")
-        self.placeholder.setFixedHeight(20)
+        self.placeholder.setFixedHeight(10)
         self.layout.addWidget(self.placeholder)
 
         self.header = Label()
@@ -436,7 +444,7 @@ class FactorBox(ContentBox):
         self.layout.addWidget(self.var3)
 
         self.placeholder3 = QFrame()
-        self.placeholder3.setFixedHeight(20)
+        self.placeholder3.setFixedHeight(10)
         self.layout.addWidget(self.placeholder3)
 
     def paintEvent(self, event):
@@ -549,3 +557,4 @@ class GrowthBox(FactorBox):
 class FundamentalView(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedSize(490, 220)

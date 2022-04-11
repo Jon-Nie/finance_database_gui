@@ -104,14 +104,14 @@ class SectionCard(QFrame):
                 font-size: 22px;
             }}
             QLabel#description {{
-                font-size: 14px;
+                font-size: 13px;
             }}
             QPushButton {{
                 border: None;
                 border-radius: 15px;
                 background-color: {button};
                 font-family: Lato;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: bold;
                 color: {button_font}
             }}
@@ -162,7 +162,7 @@ class SectionDescription(Label):
                 border-left: 5px solid {border};
                 padding-left: 20px;
                 font-family: Lato;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: bold;
                 color: {font}
             }}
