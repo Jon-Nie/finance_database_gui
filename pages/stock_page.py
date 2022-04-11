@@ -12,36 +12,38 @@ class StockPage(Page):
         self.layout.setSpacing(20)
         self.layout.setContentsMargins(50, 50, 50, 50)
 
-        self.upper_layout = QHBoxLayout()
+        self.upper_layout = QGridLayout()
         self.layout.addLayout(self.upper_layout)
-        self.lower_layout = QGridLayout()
+        self.lower_layout = QHBoxLayout()
         self.layout.addLayout(self.lower_layout)
 
         self.characteristics_box = CharacteristicsBox()
-        self.upper_layout.addWidget(self.characteristics_box, 0)
+        self.upper_layout.addWidget(self.characteristics_box, 0, 0, 1, 1)
 
         self.news_box = NewsBox()
-        self.news_box.setMaximumWidth(9999)
-        self.news_box.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        self.upper_layout.addWidget(self.news_box, 1)
+        self.upper_layout.addWidget(self.news_box, 0, 1, 2, 1)
 
         self.description_box = DescriptionBox()
-        self.lower_layout.addWidget(self.description_box, 0, 0, 1, 4)
+        self.upper_layout.addWidget(self.description_box, 1, 0, 1, 1)
 
         self.prices_box = PriceBox()
-        self.lower_layout.addWidget(self.prices_box, 0, 4, 2, 1)
+        self.upper_layout.addWidget(self.prices_box, 0, 2, 2, 1)
 
         self.analysts_box = AnalystsBox()
-        self.lower_layout.addWidget(self.analysts_box, 1, 0, 1, 1)
+        self.lower_layout.addWidget(self.analysts_box, 0)
 
         self.value_box = ValueBox("Value", "Earnings Yield", "Price-to-Book", "Price-to-Sales")
-        self.lower_layout.addWidget(self.value_box, 1, 1, 1, 1)
+        self.lower_layout.addWidget(self.value_box, 1)
 
         self.profitability_box = ProfitabilityBox("Profitability", "Return on Equity", "Return on Assets", "Net Margin")
-        self.lower_layout.addWidget(self.profitability_box, 1, 2, 1, 1)
+        self.lower_layout.addWidget(self.profitability_box, 2)
 
         self.growth_box = GrowthBox("Growth (3yr)", "Revenue Growth", "Earnings Growth", "Reinvestment Rate")
-        self.lower_layout.addWidget(self.growth_box, 1, 3, 1, 1)
+        self.lower_layout.addWidget(self.growth_box,3)
+
+        self.fundamental_view = FundamentalView()
+        self.lower_layout.addWidget(self.fundamental_view)
+
 
 class CharacteristicsBox(ContentBox):
     def __init__(self, *args, **kwargs):
@@ -99,7 +101,9 @@ class Logo(QLabel):
     @Slot(bytes)
     def update_logo(self, logo):
         self.icon.loadFromData(logo)
-        if self.icon.height() > 80:
+        if self.icon.width() > self.icon.height():
+            self.icon = self.icon.scaledToWidth(80, Qt.SmoothTransformation)
+        else:
             self.icon = self.icon.scaledToHeight(80, Qt.SmoothTransformation)
         self.setPixmap(self.icon)
 
@@ -141,7 +145,6 @@ class CharacteristicsItem(QFrame):
 class NewsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedHeight(120)
 
         self.news = []
 
@@ -151,6 +154,7 @@ class NewsBox(ContentBox):
 class DescriptionBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedSize(850, 300)
 
         self.layout = QGridLayout(self)
         self.layout.setContentsMargins(40, 30, 40, 30)
@@ -161,9 +165,6 @@ class DescriptionBox(ContentBox):
 
         self.industry = DescriptionIndustry()
         self.layout.addWidget(self.industry, 0, 1, 1, 1)
-        
-        self.executives = DescriptionExcutives()
-        self.layout.addWidget(self.executives, 0, 2, 1, 1)
 
         self.separator = QFrame()
         self.separator.setFixedHeight(1)
@@ -176,10 +177,10 @@ class DescriptionBox(ContentBox):
             }
             """
         )
-        self.layout.addWidget(self.separator, 1, 0, 1, 3)
+        self.layout.addWidget(self.separator, 1, 0, 1, 2)
 
         self.description = BusinessDescription()
-        self.layout.addWidget(self.description, 2, 0, 1, 3)
+        self.layout.addWidget(self.description, 2, 0, 1, 2)
 
 
 class BusinessDescription(QScrollArea):
@@ -218,25 +219,27 @@ class DescriptionAddress(QFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.layout = QVBoxLayout(self)
-        self.layout.setSpacing(0)
+        self.layout = QGridLayout(self)
+        self.layout.setVerticalSpacing(0)
+        self.layout.setHorizontalSpacing(10)
 
-        self.country = Country()
-        self.layout.addWidget(self.country)
+        self.country_logo = CountryLogo()
+        self.layout.addWidget(self.country_logo, 0, 0, 1, 1)
+
+        self.country_name = Label()
+        self.layout.addWidget(self.country_name, 1, 0, 1, 1)
         
         self.city = Label()
-        self.layout.addWidget(self.city)
+        self.layout.addWidget(self.city, 2, 0, 1, 1)
 
         self.street = Label()
-        self.layout.addWidget(self.street)
+        self.layout.addWidget(self.street, 0, 1, 1, 1)
 
         self.website = Label()
-        self.layout.addWidget(self.website)
+        self.layout.addWidget(self.website, 1, 1, 1, 1)
 
         self.employees = Label()
-        self.layout.addWidget(self.employees)
-
-        self.layout.addWidget(QFrame())
+        self.layout.addWidget(self.employees, 2, 1, 1, 1)
 
         self.setStyleSheet(
             """
@@ -248,8 +251,9 @@ class DescriptionAddress(QFrame):
             }
             """
         )
+        self.layout.addWidget(QFrame(), 3, 0, 1, 2)
 
-class Country(QPushButton):
+class CountryLogo(QLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.icon = QPixmap()
@@ -269,44 +273,48 @@ class Country(QPushButton):
     @Slot(bytes)
     def update_icon(self, logo):
         self.icon.loadFromData(logo)
-        self.setIconSize(QSize(40, 20))
-        self.setIcon(self.icon)
+        self.icon = self.icon.scaledToHeight(15, Qt.SmoothTransformation)
+        self.setPixmap(self.icon)
 
 
 class DescriptionIndustry(QFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.layout = QVBoxLayout(self)
-        self.layout.setSpacing(0)
+        self.layout = QGridLayout(self)
+        self.layout.setVerticalSpacing(0)
+        self.layout.setHorizontalSpacing(10)
 
         self.gics = Label("GICS")
         self.gics.setObjectName("header")
-        self.layout.addWidget(self.gics)
+        self.gics.setFixedWidth(200)
+        self.layout.addWidget(self.gics, 0, 0, 1, 1)
 
         self.gics_sector = Label()
         self.gics_sector.setObjectName("value")
-        self.layout.addWidget(self.gics_sector)
+        self.gics_sector.setWordWrap(True)
+        self.layout.addWidget(self.gics_sector, 1, 0, 1, 1)
 
         self.gics_industry = Label()
         self.gics_industry.setObjectName("value")
-        self.layout.addWidget(self.gics_industry)
-
-        self.placeholder = QFrame()
-        self.placeholder.setFixedHeight(20)
-        self.layout.addWidget(self.placeholder)
+        self.gics_industry.setWordWrap(True)
+        self.gics_industry.setAlignment(Qt.AlignTop)
+        self.layout.addWidget(self.gics_industry, 2, 0, 1, 1)
 
         self.sic = Label("SIC")
+        self.sic.setFixedWidth(200)
         self.sic.setObjectName("header")
-        self.layout.addWidget(self.sic)
+        self.layout.addWidget(self.sic, 0, 1, 1, 1)
 
         self.sic_division = Label()
         self.sic_division.setObjectName("value")
-        self.layout.addWidget(self.sic_division)
+        self.sic_division.setWordWrap(True)
+        self.layout.addWidget(self.sic_division, 1, 1, 1, 1)
 
         self.sic_industry = Label()
         self.sic_industry.setObjectName("value")
-        self.layout.addWidget(self.sic_industry)
+        self.sic_industry.setWordWrap(True)
+        self.layout.addWidget(self.sic_industry, 2, 1, 1, 1)
 
         self.setStyleSheet(
             """
@@ -537,3 +545,7 @@ class GrowthBox(FactorBox):
         self.var1.value.setText(f"{rg:.2%}")
         self.var2.value.setText(f"{eg:.2%}")
         self.var3.value.setText(f"{rr:.2%}")
+
+class FundamentalView(ContentBox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
