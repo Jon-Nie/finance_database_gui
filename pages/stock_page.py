@@ -387,11 +387,16 @@ class FactorBoxItem(QFrame):
 class FactorBox(ContentBox):
     def __init__(self, header, var1, var2, var3, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(200, 275)
+        self.setFixedSize(180, 260)
         self.color = "black"
 
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(0)
+
+        self.placeholder = QFrame()
+        self.placeholder.setStyleSheet("background-color: transparent")
+        self.placeholder.setFixedHeight(20)
+        self.layout.addWidget(self.placeholder)
 
         self.header = Label()
         self.header.setText(header)
@@ -409,6 +414,10 @@ class FactorBox(ContentBox):
         )
         self.layout.addWidget(self.header)
 
+        self.placeholder2 = QFrame()
+        self.placeholder2.setFixedHeight(20)
+        self.layout.addWidget(self.placeholder2)
+
         self.var1 = FactorBoxItem(var1)
         self.layout.addWidget(self.var1)
 
@@ -417,6 +426,10 @@ class FactorBox(ContentBox):
 
         self.var3 = FactorBoxItem(var3)
         self.layout.addWidget(self.var3)
+
+        self.placeholder3 = QFrame()
+        self.placeholder3.setFixedHeight(20)
+        self.layout.addWidget(self.placeholder3)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -428,7 +441,7 @@ class FactorBox(ContentBox):
         painter.drawChord(QRectF(0, 0, 20, 20), -180*16, -180*16)
         painter.drawChord(QRectF(self.width()-20, 0, 20, 20), -180*16, -180*16)
 
-        #painter.end()
+        painter.end()
 
 
 class ValueBox(FactorBox):
