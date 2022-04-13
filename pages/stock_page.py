@@ -2,6 +2,7 @@ from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtCharts import QtCharts
+import pandas as pd
 from .page import Page
 from shared_widgets import Label, ContentBox
 
@@ -382,11 +383,15 @@ class PriceView(QtCharts.QChartView):
         self.setFixedHeight(200)
         self.setRenderHint(QPainter.Antialiasing)
     
-    def update_data(self, series):
+    @Slot(pd.Series)
+    def set_data(self, series):
+        self.data = series.dropna()
+        self.update_data()
+    
+    def update_data(self):
         self.series = QtCharts.QLineSeries()
-        series = series.dropna()
-        for index in series.index:
-            self.series.append(index, series[index])
+        for index in self.data.index:
+            self.series.append(index, self.data.loc[index])
 
         self.chart = QtCharts.QChart()
         self.chart.addSeries(self.series)
@@ -511,10 +516,17 @@ class FactorBox(ContentBox):
 class ValueBox(FactorBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    
+    @Slot(pd.DataFrame)
+    def set_data(self, data):
+        self.data = data
+        self.update_data()
 
-    @Slot(bytes)
-    def update_data(self, ey, bm, sp):
+    def update_data(self):
         score = 0
+        ey = self.data.loc[self.data.index[-1], "e/p"]
+        bm = self.data.loc[self.data.index[-1], "b/m"]
+        sp = self.data.loc[self.data.index[-1], "s/p"]
         if ey > 0.05:
             score +=1
         elif ey < 0.3:
@@ -544,9 +556,16 @@ class ProfitabilityBox(FactorBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @Slot(bytes)
-    def update_data(self, roe, roa, margin):
+    @Slot(pd.DataFrame)
+    def set_data(self, data):
+        self.data = data
+        self.update_data()
+
+    def update_data(self):
         score = 0
+        roe = self.data.loc[self.data.index[-1], "roe ttm"]
+        roa = self.data.loc[self.data.index[-1], "roa ttm"]
+        margin = self.data.loc[self.data.index[-1], "net margin ttm"]
         if roe > 0.15:
             score +=1
         elif roe < 0.08:
@@ -575,9 +594,16 @@ class GrowthBox(FactorBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @Slot(bytes)
-    def update_data(self, rg, eg, rr):
+    def set_data(self, data):
+        self.data = data
+        self.update_data()
+
+    @Slot(pd.DataFrame)
+    def update_data(self):
         score = 0
+        rg = self.data.loc[self.data.index[-1], "revenue growth ttm"]
+        eg = self.data.loc[self.data.index[-1], "net income growth ttm"]
+        rr = self.data.loc[self.data.index[-1], "reinvestment rate ttm"]
         if rg > 0.1:
             score +=1
         elif rg < 0:
@@ -611,7 +637,7 @@ class FundamentalView(ContentBox):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
 
-        self.header = Label("Revenue")
+        self.header = Label()
         self.header.setStyleSheet(
             """
             QLabel {
@@ -628,12 +654,17 @@ class FundamentalView(ContentBox):
         self.chartview = QtCharts.QChartView()
         self.chartview.setRenderHint(QPainter.Antialiasing)
         self.layout.addWidget(self.chartview)
+
+    @Slot(pd.Series, str)
+    def set_data(self, data, name):
+        self.data = data.dropna()
+        self.update_data()
+        self.header.setText(name)
     
-    def update_data(self, data, name):
-        data = list(data.dropna().values)
-        self.barset = QtCharts.QBarSet(name)
+    def update_data(self):
+        self.barset = QtCharts.QBarSet("")
         self.barset.setColor("#3E75C8")
-        self.barset.append(data)
+        self.barset.append(list(self.data.values))
 
         self.series = QtCharts.QBarSeries()
         self.series.append(self.barset)
