@@ -215,9 +215,9 @@ class MainWindow(QMainWindow):
         self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.sic_division, 16, b"text")
         self.mapper.addMapping(self.content.pages.stock_page.description_box.industry.sic_industry, 17, b"text")
         self.mapper.addMapping(self.content.pages.stock_page.description_box.description.description, 18, b"text")
-        self.model.update_value.connect(self.content.pages.stock_page.value_box.update_data)
-        self.model.update_profitability.connect(self.content.pages.stock_page.profitability_box.update_data)
-        self.model.update_growth.connect(self.content.pages.stock_page.growth_box.update_data)
+        self.model.update_factor_box.connect(self.content.pages.stock_page.value_box.update_data)
+        self.model.update_factor_box.connect(self.content.pages.stock_page.profitability_box.update_data)
+        self.model.update_factor_box.connect(self.content.pages.stock_page.growth_box.update_data)
         self.mapper.toFirst()
 
 

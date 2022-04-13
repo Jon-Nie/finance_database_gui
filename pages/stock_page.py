@@ -365,6 +365,36 @@ class PriceBox(ContentBox):
         super().__init__(*args, **kwargs)
         self.setMinimumWidth(370)
 
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
+
+        self.price_view = PriceView()
+        self.layout.addWidget(self.price_view)
+
+        self.descriptive_statistics = DescriptiveStatistics()
+        self.layout.addWidget(self.descriptive_statistics)
+
+
+class PriceView(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.setStyleSheet(
+            """
+            QFrame {
+                background-color: #3E75C8;
+                border-bottom-left-radius: 0px;
+                border-bottom-right-radius: 0px;
+            }
+            """
+        )
+
+
+class DescriptiveStatistics(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 
 class AnalystsBox(ContentBox):
     def __init__(self, *args, **kwargs):
