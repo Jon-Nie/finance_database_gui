@@ -155,7 +155,7 @@ class DescriptionBox(ContentBox):
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(40, 30, 40, 30)
-        self.layout.setSpacing(5)
+        self.layout.setSpacing(10)
 
         self.address = DescriptionAddress()
         self.layout.addWidget(self.address)
@@ -169,8 +169,7 @@ class DescriptionBox(ContentBox):
             """
             QFrame {
                 background-color: #BCBCBC;
-                margin-left: 10px;
-                margin-right: 10px
+                margin-right: 10px;
             }
             """
         )
@@ -196,9 +195,7 @@ class BusinessDescription(QScrollArea):
                 font-size: 13px;
                 font-weight: 600;
                 color: #333333;
-                padding-left: 10px;
-                padding-top: 10px;
-                padding-right: 20px
+                padding-right: 10px
             }
             QScrollBar:vertical {
                 background-color: #FFFFFF;
@@ -218,10 +215,11 @@ class DescriptionAddress(QFrame):
         super().__init__(*args, **kwargs)
 
         self.layout = QGridLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setVerticalSpacing(0)
         self.layout.setHorizontalSpacing(10)
 
-        self.header = QLabel("Description")
+        self.header = Label("Description")
         self.header.setStyleSheet(
             """
             QLabel {
@@ -293,6 +291,7 @@ class DescriptionIndustry(QFrame):
         super().__init__(*args, **kwargs)
 
         self.layout = QGridLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setVerticalSpacing(5)
         self.layout.setHorizontalSpacing(10)
 
@@ -400,7 +399,8 @@ class DescriptiveStatistics(QFrame):
 class AnalystsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setMinimumHeight(220)
+        self.setFixedHeight(220)
+        self.setFixedWidth(200)
 
         self.abr = None
         self.average_price_target = None
@@ -447,7 +447,8 @@ class FactorBoxItem(QFrame):
 class FactorBox(ContentBox):
     def __init__(self, header, var1, var2, var3, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setMinimumHeight(220)
+        self.setFixedHeight(220)
+        self.setFixedWidth(160)
         self.color = "black"
 
         self.layout = QVBoxLayout(self)
@@ -455,7 +456,7 @@ class FactorBox(ContentBox):
 
         self.placeholder = QFrame()
         self.placeholder.setStyleSheet("background-color: transparent")
-        self.placeholder.setMinimumHeight(10)
+        self.placeholder.setMinimumHeight(20)
         self.layout.addWidget(self.placeholder)
 
         self.header = Label()
@@ -475,7 +476,7 @@ class FactorBox(ContentBox):
         self.layout.addWidget(self.header)
 
         self.placeholder2 = QFrame()
-        self.placeholder2.setMinimumHeight(20)
+        self.placeholder2.setMinimumHeight(10)
         self.layout.addWidget(self.placeholder2)
 
         self.var1 = FactorBoxItem(var1)
@@ -601,23 +602,36 @@ class GrowthBox(FactorBox):
 class FundamentalView(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(480, 220)
+        self.setFixedHeight(220)
 
         self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(0)
+
+        self.header = Label("Revenue")
+        self.header.setStyleSheet(
+            """
+            QLabel {
+                font-family: Lato;
+                font-size: 20px;
+                font-weight: 600;
+                color: #333333;
+                padding: 20px 0px 0px 40px
+            }
+            """
+        )
+        self.layout.addWidget(self.header)
 
         self.barset = QtCharts.QBarSet("Revenue")
         data = [10, 12, 11, 14, 23, 22, 25, 27, 31, 44, 44, 37, 55]
         self.barset.append(data)
 
         self.series = QtCharts.QBarSeries()
+        self.series.setLabelsVisible(False)
         self.series.append(self.barset)
 
         self.chart = QtCharts.QChart()
         self.chart.addSeries(self.series)
-
-        self.y_axis = QtCharts.QValueAxis()
-        self.y_axis.setRange(min(data), max(data))
-        self.chart.setAxisY(self.y_axis, self.series)
 
         self.chartview = QtCharts.QChartView()
         self.chartview.setChart(self.chart)
@@ -627,6 +641,7 @@ class FundamentalView(ContentBox):
     def update_data(self, data, name):
         data = list(data.dropna().values)
         self.barset = QtCharts.QBarSet(name)
+        self.barset.setColor("#3E75C8")
         self.barset.append(data)
 
         self.series = QtCharts.QBarSeries()
@@ -635,7 +650,4 @@ class FundamentalView(ContentBox):
         self.chart = QtCharts.QChart()
         self.chart.addSeries(self.series)
         self.chartview.setChart(self.chart)
-
-        #self.y_axis = QtCharts.QValueAxis()
-        #self.y_axis.setRange(min(data), max(data))
-        #self.chart.setAxisY(self.y_axis, self.series)
+        self.chart.legend().hide()
