@@ -1,6 +1,7 @@
 from PySide2.QtCore import *
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
+from PySide2.QtCharts import QtCharts
 from .page import Page
 from shared_widgets import Label, ContentBox
 
@@ -600,4 +601,41 @@ class GrowthBox(FactorBox):
 class FundamentalView(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setMinimumSize(480, 220)
+        self.setFixedSize(480, 220)
+
+        self.layout = QVBoxLayout(self)
+
+        self.barset = QtCharts.QBarSet("Revenue")
+        data = [10, 12, 11, 14, 23, 22, 25, 27, 31, 44, 44, 37, 55]
+        self.barset.append(data)
+
+        self.series = QtCharts.QBarSeries()
+        self.series.append(self.barset)
+
+        self.chart = QtCharts.QChart()
+        self.chart.addSeries(self.series)
+
+        self.y_axis = QtCharts.QValueAxis()
+        self.y_axis.setRange(min(data), max(data))
+        self.chart.setAxisY(self.y_axis, self.series)
+
+        self.chartview = QtCharts.QChartView()
+        self.chartview.setChart(self.chart)
+        self.chartview.setRenderHint(QPainter.Antialiasing)
+        self.layout.addWidget(self.chartview)
+    
+    def update_data(self, data, name):
+        data = list(data.dropna().values)
+        self.barset = QtCharts.QBarSet(name)
+        self.barset.append(data)
+
+        self.series = QtCharts.QBarSeries()
+        self.series.append(self.barset)
+
+        self.chart = QtCharts.QChart()
+        self.chart.addSeries(self.series)
+        self.chartview.setChart(self.chart)
+
+        #self.y_axis = QtCharts.QValueAxis()
+        #self.y_axis.setRange(min(data), max(data))
+        #self.chart.setAxisY(self.y_axis, self.series)
