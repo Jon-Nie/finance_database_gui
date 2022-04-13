@@ -376,19 +376,22 @@ class PriceBox(ContentBox):
         self.layout.addWidget(self.descriptive_statistics)
 
 
-class PriceView(QFrame):
+class PriceView(QtCharts.QChartView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setFixedHeight(200)
+        self.setRenderHint(QPainter.Antialiasing)
+    
+    def update_data(self, series):
+        self.series = QtCharts.QLineSeries()
+        series = series.dropna()
+        for index in series.index:
+            self.series.append(index, series[index])
 
-        self.setStyleSheet(
-            """
-            QFrame {
-                background-color: #3E75C8;
-                border-bottom-left-radius: 0px;
-                border-bottom-right-radius: 0px;
-            }
-            """
-        )
+        self.chart = QtCharts.QChart()
+        self.chart.addSeries(self.series)
+        self.chart.legend().hide()
+        self.setChart(self.chart)
 
 
 class DescriptiveStatistics(QFrame):
@@ -622,19 +625,7 @@ class FundamentalView(ContentBox):
         )
         self.layout.addWidget(self.header)
 
-        self.barset = QtCharts.QBarSet("Revenue")
-        data = [10, 12, 11, 14, 23, 22, 25, 27, 31, 44, 44, 37, 55]
-        self.barset.append(data)
-
-        self.series = QtCharts.QBarSeries()
-        self.series.setLabelsVisible(False)
-        self.series.append(self.barset)
-
-        self.chart = QtCharts.QChart()
-        self.chart.addSeries(self.series)
-
         self.chartview = QtCharts.QChartView()
-        self.chartview.setChart(self.chart)
         self.chartview.setRenderHint(QPainter.Antialiasing)
         self.layout.addWidget(self.chartview)
     

@@ -219,6 +219,7 @@ class MainWindow(QMainWindow):
         self.model.update_profitability_box.connect(self.content.pages.stock_page.profitability_box.update_data)
         self.model.update_growth_box.connect(self.content.pages.stock_page.growth_box.update_data)
         self.model.update_fundamental_view.connect(self.content.pages.stock_page.fundamental_view.update_data)
+        self.model.update_prices.connect(self.content.pages.stock_page.prices_box.price_view.update_data)
         self.mapper.toFirst()
 
 

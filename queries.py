@@ -127,7 +127,7 @@ def get_time_series_data(ticker=None, isin=None) -> pd.DataFrame:
     fundamentals = get_fundamental_data(ticker)
 
     df = pd.concat([prices, fundamentals], axis=1)
-    df.index = pd.to_datetime(df.index, unit="s")
+    #df.index = pd.to_datetime(df.index, unit="s")
     df = df.sort_index()
 
     df["split"] = df["split"].fillna(0)
