@@ -172,10 +172,10 @@ def get_time_series_data(ticker=None, isin=None) -> pd.DataFrame:
     
     df = df.copy()
     df["market_cap"] = df["close"] * df["diluted shares outstanding"]
-    df["p/e"] = df["market_cap"] / df["income from continuous operations ttm"]
-    df["p/cf"] = df["market_cap"] / df["cashflow from operating activities ttm"]
-    df["p/b"] = df["market_cap"] / df["total shareholders equity ttm"]
-    df["p/s"] = df["market_cap"] / df["revenue ttm"]
+    df["e/p"] = df["income from continuous operations ttm"] / df["market_cap"]
+    df["cf/p"] = df["cashflow from operating activities ttm"] / df["market_cap"]
+    df["b/m"] = df["total shareholders equity ttm"] / df["market_cap"]
+    df["s/p"] = df["revenue ttm"] / df["market_cap"]
     df["payout_yield"] = -(df["total dividends paid ttm"].fillna(0) + df["common stock issued/repurchased ttm"].fillna(0)) / df["market_cap"]
     
     df = df[df["close"].notna()]
@@ -199,7 +199,7 @@ def get_stock_data(ticker) -> list:
         market_cap /= 1_000_000
         digit = "M"
     data.insert(5, f"${market_cap:.2f}{digit}")
-    data.insert(6, f"{time_series.loc[index[-1], 'p/e']:.2f}")
+    data.insert(6, f"{1/time_series.loc[index[-1], 'e/p']:.2f}")
     data.insert(7, f"{time_series.loc[index[-1], 'payout_yield']:.2%}")
     data.insert(19, news)
     

@@ -30,9 +30,9 @@ class StockData(QAbstractListModel):
             self.update_logo.emit(self.stockdata[0])
             self.update_country_icon.emit(self.stockdata[8])
             self.update_value.emit(
-                (1/self.stockdata[20]["p/e"][-1]),
-                self.stockdata[20]["p/b"][-1],
-                self.stockdata[20]["p/s"][-1]
+                (self.stockdata[20]["e/p"][-1]),
+                self.stockdata[20]["b/m"][-1],
+                self.stockdata[20]["s/p"][-1]
             )
             self.update_profitability.emit(
                 self.stockdata[20]["roe ttm"][-1],

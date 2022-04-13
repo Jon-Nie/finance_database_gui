@@ -10,11 +10,13 @@ class StockPage(Page):
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(50, 50, 50, 50)
+        self.layout.setSpacing(20)
 
         self.upper_layout = QGridLayout()
         self.upper_layout.setSpacing(20)
         self.layout.addLayout(self.upper_layout)
         self.lower_layout = QHBoxLayout()
+        self.lower_layout.setSpacing(20)
         self.layout.addLayout(self.lower_layout)
 
         self.characteristics_box = CharacteristicsBox()
@@ -48,7 +50,7 @@ class StockPage(Page):
 class CharacteristicsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedHeight(120)
+        self.setMinimumHeight(120)
 
         self.layout = QGridLayout(self)
         self.setContentsMargins(20, 10, 20, 10)
@@ -148,7 +150,7 @@ class CharacteristicsItem(QFrame):
 class DescriptionBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(750, 300)
+        self.setMinimumSize(750, 300)
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(40, 30, 40, 30)
@@ -161,7 +163,7 @@ class DescriptionBox(ContentBox):
         self.layout.addWidget(self.industry)
 
         self.separator = QFrame()
-        self.separator.setFixedHeight(1)
+        self.separator.setMinimumHeight(1)
         self.separator.setStyleSheet(
             """
             QFrame {
@@ -218,7 +220,7 @@ class DescriptionAddress(QFrame):
         self.layout.setHorizontalSpacing(10)
 
         self.placeholder = QLabel()
-        self.placeholder.setFixedWidth(200)
+        self.placeholder.setMinimumWidth(200)
         self.layout.addWidget(self.placeholder, 0, 0, 1, 2)
 
         self.country_logo = CountryLogo()
@@ -340,7 +342,7 @@ class DescriptionExcutives(QFrame):
 class NewsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedWidth(200)
+        self.setMinimumWidth(200)
 
         self.news = []
 
@@ -350,13 +352,13 @@ class NewsBox(ContentBox):
 class PriceBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedWidth(370)
+        self.setMinimumWidth(370)
 
 
 class AnalystsBox(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(200, 220)
+        self.setMinimumHeight(220)
 
         self.abr = None
         self.average_price_target = None
@@ -403,7 +405,7 @@ class FactorBoxItem(QFrame):
 class FactorBox(ContentBox):
     def __init__(self, header, var1, var2, var3, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(160, 220)
+        self.setMinimumHeight(220)
         self.color = "black"
 
         self.layout = QVBoxLayout(self)
@@ -411,7 +413,7 @@ class FactorBox(ContentBox):
 
         self.placeholder = QFrame()
         self.placeholder.setStyleSheet("background-color: transparent")
-        self.placeholder.setFixedHeight(10)
+        self.placeholder.setMinimumHeight(10)
         self.layout.addWidget(self.placeholder)
 
         self.header = Label()
@@ -431,7 +433,7 @@ class FactorBox(ContentBox):
         self.layout.addWidget(self.header)
 
         self.placeholder2 = QFrame()
-        self.placeholder2.setFixedHeight(20)
+        self.placeholder2.setMinimumHeight(20)
         self.layout.addWidget(self.placeholder2)
 
         self.var1 = FactorBoxItem(var1)
@@ -444,7 +446,7 @@ class FactorBox(ContentBox):
         self.layout.addWidget(self.var3)
 
         self.placeholder3 = QFrame()
-        self.placeholder3.setFixedHeight(10)
+        self.placeholder3.setMinimumHeight(10)
         self.layout.addWidget(self.placeholder3)
 
     def paintEvent(self, event):
@@ -465,19 +467,19 @@ class ValueBox(FactorBox):
         super().__init__(*args, **kwargs)
 
     @Slot(bytes)
-    def update_data(self, ey, pb, ps):
+    def update_data(self, ey, bm, sp):
         score = 0
         if ey > 0.05:
             score +=1
         elif ey < 0.3:
             score -= 1
-        if pb < 2:
+        if bm > 0.5:
             score +=1
-        elif pb > 5:
+        elif bm < 0.1:
             score -= 1
-        if ps < 2:
+        if sp > 1:
             score +=1
-        elif ps > 5:
+        elif sp < 0.2:
             score -= 1
 
         if score >= 1:
@@ -488,8 +490,8 @@ class ValueBox(FactorBox):
             self.color = "#FFD43C"
         
         self.var1.value.setText(f"{ey:.2%}")
-        self.var2.value.setText(f"{pb:.2f}")
-        self.var3.value.setText(f"{ps:.2f}")
+        self.var2.value.setText(f"{1/bm:.2f}")
+        self.var3.value.setText(f"{1/sp:.2f}")
 
 
 class ProfitabilityBox(FactorBox):
@@ -557,4 +559,4 @@ class GrowthBox(FactorBox):
 class FundamentalView(ContentBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedSize(490, 220)
+        self.setMinimumSize(480, 220)
