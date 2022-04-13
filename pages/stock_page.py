@@ -407,8 +407,8 @@ class PriceView(QFrame):
         self.layout.addWidget(self.chartview)
 
         self.options_frame = OptionsFrame(self)
-        self.options_frame.setStyleSheet("background-color: #497ECD")
-        self.options_frame.setGeometry(self.width(), 50, 230, 120)
+        self.options_frame.hide()
+
         self.options_frame.log.stateChanged.connect(self.update_data)
         self.options_frame.adjusted.stateChanged.connect(self.update_data)
         self.options_frame.raw.stateChanged.connect(self.update_data)
@@ -419,20 +419,12 @@ class PriceView(QFrame):
         self.update_data()
     
     def show_options(self):
-        width, height = self.options_frame.width(), self.options_frame.height()
-        if self.options_frame.geometry().x() == self.width()-width:
-            start = self.width()-width
-            end = self.width()
-            steps = range(start, end+1, 2)
+        self.options_frame.setGeometry(self.width()-230, 70, 230, 130)
+        if self.options_frame.isHidden():
+            self.options_frame.show()
         else:
-            start = self.width()
-            end = self.width()-width
-            steps = range(start, end-1, -2)
-        for step in steps:
-            loop = QEventLoop()
-            QTimer.singleShot(1, loop.quit)
-            loop.exec_()
-            self.options_frame.setGeometry(step, 70, width, height)
+            self.options_frame.hide()
+
     
     def update_data(self):
         if self.sender() in self.timeframe_picker.buttons.values():
@@ -479,6 +471,7 @@ class PriceView(QFrame):
 class OptionsFrame(QFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setStyleSheet("background-color: #497ECD")
 
         self.layout = QVBoxLayout(self)
 
