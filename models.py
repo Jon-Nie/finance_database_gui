@@ -36,10 +36,10 @@ class StockData(QAbstractListModel):
                 self.stockdata[20][["e/p", "b/m", "s/p"]]
             )
             self.update_profitability_box.emit(
-                self.stockdata[20][["roe ttm", "roa ttm", "net margin ttm"]]
+                self.stockdata[21][["roe ttm", "roa ttm", "net margin ttm"]]
             )
             self.update_growth_box.emit(
-                self.stockdata[20][["revenue growth ttm", "net income growth ttm", "reinvestment rate ttm"]]
+                self.stockdata[21][["revenue growth ttm", "net income growth ttm", "reinvestment rate ttm"]]
             )
             self.update_fundamental_view.emit(self.stockdata[21]["revenue ttm"], "Revenue")
             self.update_prices.emit(self.stockdata[20]["close"])

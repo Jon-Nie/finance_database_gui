@@ -3,8 +3,11 @@ from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtCharts import QtCharts
 import pandas as pd
+import numpy as np
+from dateutil.relativedelta import relativedelta
 from .page import Page
 from shared_widgets import Label, ContentBox
+from finance_database_gui.stylesheets import chart_option_button_css
 
 class StockPage(Page):
     def __init__(self, *args, **kwargs):
@@ -377,26 +380,225 @@ class PriceBox(ContentBox):
         self.layout.addWidget(self.descriptive_statistics)
 
 
-class PriceView(QtCharts.QChartView):
+class PriceView(QFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setFixedHeight(200)
-        self.setRenderHint(QPainter.Antialiasing)
+        self.setStyleSheet(
+            """
+            QFrame {
+                background-color: #3E75C8
+            }
+            """
+        )
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(20, 20, 20, 0)
+        self.layout.setSpacing(0)
+
+        self.timeframe_picker = TimeFramePicker()
+        for button in self.timeframe_picker.buttons.values():
+            button.clicked.connect(self.update_data)
+        self.timeframe_picker.options_button.clicked.connect(self.show_options)
+        self.layout.addWidget(self.timeframe_picker)
+
+        self.chartview = QtCharts.QChartView()
+        self.chartview.setRenderHint(QPainter.Antialiasing)
+        self.layout.addWidget(self.chartview)
+
+        self.options_frame = OptionsFrame(self)
+        self.options_frame.setStyleSheet("background-color: #497ECD")
+        self.options_frame.setGeometry(self.width(), 50, 230, 120)
+        self.options_frame.log.stateChanged.connect(self.update_data)
+        self.options_frame.adjusted.stateChanged.connect(self.update_data)
+        self.options_frame.raw.stateChanged.connect(self.update_data)
     
     @Slot(pd.Series)
     def set_data(self, series):
         self.data = series.dropna()
         self.update_data()
     
+    def show_options(self):
+        width, height = self.options_frame.width(), self.options_frame.height()
+        if self.options_frame.geometry().x() == self.width()-width:
+            start = self.width()-width
+            end = self.width()
+            steps = range(start, end+1, 2)
+        else:
+            start = self.width()
+            end = self.width()-width
+            steps = range(start, end-1, -2)
+        for step in steps:
+            loop = QEventLoop()
+            QTimer.singleShot(1, loop.quit)
+            loop.exec_()
+            self.options_frame.setGeometry(step, 70, width, height)
+    
     def update_data(self):
+        if self.sender() in self.timeframe_picker.buttons.values():
+            label = self.sender().text()
+        elif self.sender() in (self.options_frame.log, self.options_frame.adjusted, self.options_frame.raw):
+            for button in self.timeframe_picker.buttons.values():
+                if button.objectName() == "active":
+                    label = button.text()
+        else:
+            label = "1Yr"
+        for text, button in self.timeframe_picker.buttons.items():
+            if text == label:
+                button.setObjectName("active")
+            else:
+                button.setObjectName("inactive")
+            button.setStyleSheet(chart_option_button_css)
+
+        if "Yr" in label:
+            ts = (pd.to_datetime("today") - relativedelta(years=self.timeframe_picker.deltas[label])).timestamp()
+        elif label != "Max":
+            ts = (pd.to_datetime("today") - relativedelta(months=self.timeframe_picker.deltas[label])).timestamp()
+        else:
+            ts = pd.to_datetime("1900-01-01").timestamp()
+
         self.series = QtCharts.QLineSeries()
-        for index in self.data.index:
-            self.series.append(index, self.data.loc[index])
+        pen = QPen()
+        pen.setWidth(2)
+        pen.setColor("#FFFFFF")
+        self.series.setPen(pen)
+        for index in self.data.loc[ts:].index:
+            if self.options_frame.log.isChecked():
+                self.series.append(index, np.log(self.data.loc[index]))
+            else:
+
+                self.series.append(index, self.data.loc[index])
 
         self.chart = QtCharts.QChart()
         self.chart.addSeries(self.series)
+        self.chart.setBackgroundBrush(QBrush(QColor("transparent")))
         self.chart.legend().hide()
-        self.setChart(self.chart)
+        self.chartview.setChart(self.chart)
+
+
+class OptionsFrame(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.layout = QVBoxLayout(self)
+
+        self.header = QLabel("Options")
+        self.header.setStyleSheet(
+            """
+            QLabel {
+                font-family: Lato;
+                font-size: 14px;
+                font-weight: 600;
+                color: #FFFFFF
+            }
+            """
+        )
+        self.layout.addWidget(self.header)
+
+        self.log = QCheckBox("Logarithmized Prices")
+        self.log.setStyleSheet(
+            """
+            QCheckBox {
+                font-family: Lato;
+                font-size: 12px;
+                font-weight: 600;
+                color: #FFFFFF
+            }
+            """
+        )
+        self.layout.addWidget(self.log)
+
+        self.adjusted = QCheckBox("Include Dividends/Adjusted Close")
+        self.adjusted.setStyleSheet(
+            """
+            QCheckBox {
+                font-family: Lato;
+                font-size: 12px;
+                font-weight: 600;
+                color: #FFFFFF
+            }
+            """
+        )
+        self.layout.addWidget(self.adjusted)
+
+        self.raw = QCheckBox("Raw Prices / Ignore Splits")
+        self.raw.setStyleSheet(
+            """
+            QCheckBox {
+                font-family: Lato;
+                font-size: 12px;
+                font-weight: 600;
+                color: #FFFFFF
+            }
+            """
+        )
+        self.layout.addWidget(self.raw)
+
+
+class TimeFramePicker(QFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFixedHeight(30)
+        self.setStyleSheet(chart_option_button_css)
+
+        self.layout = QHBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(10)
+        self.buttons = {}
+        self.deltas = {
+            "1M": 1,
+            "3M": 3,
+            "6M": 6,
+            "1Yr": 1,
+            "5Yr": 5,
+            "10Yr": 10,
+            "25Yr": 25
+        }
+        for label in (
+            "1M",
+            "3M",
+            "6M",
+            "1Yr",
+            "5Yr",
+            "10Yr",
+            "25Yr",
+            "Max"
+        ):
+            button = QPushButton(label)
+            button.setCursor(QCursor(Qt.PointingHandCursor))
+            button.setFixedSize(35, self.height())
+            self.layout.addWidget(button)
+            self.buttons[label] = button
+
+        self.options_button = OptionsButton()
+        self.options_button.setFixedHeight(self.height())
+        self.layout.addWidget(self.options_button)
+
+
+class OptionsButton(QPushButton):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setCursor(QCursor(Qt.PointingHandCursor))
+        self.setStyleSheet(
+            """
+            QPushButton {
+                background-color: transparent;
+            }
+            """
+        )
+    
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QColor("#FFFFFF"))
+
+        width, height = (4, 4)
+        painter.drawEllipse(QRectF(self.width()/2-width/2, self.height()/5, width, height))
+        painter.drawEllipse(QRectF(self.width()/2-width/2, self.height()*2/5, width, height))
+        painter.drawEllipse(QRectF(self.width()/2-width/2, self.height()*3/5, width, height))
+
+        painter.end()
 
 
 class DescriptiveStatistics(QFrame):

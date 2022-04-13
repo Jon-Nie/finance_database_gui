@@ -169,3 +169,24 @@ close_css = """
         icon: url(icons/close_white.svg);
     }
 """
+
+chart_option_button_css = """
+    QPushButton {
+        font-family: Lato;
+        font-size: 13px;
+        font-weight: 600;
+        color: #FFFFFF;
+        background-color: #497ECD;
+        border: none;
+        border-radius: 5px
+    }
+    QPushButton:hover {
+        background-color: #2B5DA9;
+    }
+    QPushButton:pressed {
+        background-color: #1D509C
+    }
+    QPushButton#active {
+        background-color: #2760B5;
+    }
+"""
