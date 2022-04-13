@@ -62,7 +62,7 @@ class SearchBox(QLineEdit):
         self.setStyleSheet(search_box_css)
 
         data = get_stock_list()
-        self.data = ["   ".join(t) for t in data]
+        self.data = ["\t".join(t) for t in data]
         self.model = QStringListModel(self.data)
         self.completer = QCompleter()
         self.completer.setModel(self.model)

@@ -193,9 +193,10 @@ class BusinessDescription(QScrollArea):
             QLabel {
                 font-family: Lato;
                 font-size: 13px;
-                font-weight: 400;
+                font-weight: 600;
                 color: #333333;
                 padding-left: 10px;
+                padding-top: 10px;
                 padding-right: 20px
             }
             QScrollBar:vertical {
@@ -219,9 +220,19 @@ class DescriptionAddress(QFrame):
         self.layout.setVerticalSpacing(0)
         self.layout.setHorizontalSpacing(10)
 
-        self.placeholder = QLabel()
-        self.placeholder.setMinimumWidth(200)
-        self.layout.addWidget(self.placeholder, 0, 0, 1, 2)
+        self.header = QLabel("Description")
+        self.header.setStyleSheet(
+            """
+            QLabel {
+                font-family: Lato;
+                font-size: 20px;
+                font-weight: 600;
+                color: #333333
+            }
+            """
+        )
+        self.header.setMinimumWidth(200)
+        self.layout.addWidget(self.header, 0, 0, 1, 2)
 
         self.country_logo = CountryLogo()
         self.layout.addWidget(self.country_logo, 0, 1, 1, 1)

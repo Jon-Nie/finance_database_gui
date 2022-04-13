@@ -170,7 +170,7 @@ class MainWindow(QMainWindow):
         return dct
     
     def searchbox_clicked(self):
-        ticker, name, type_ = self.content.topbar.search_box.text().split("   ")
+        ticker, name, type_ = self.content.topbar.search_box.text().split("\t")
         ticker, name, type_ = ticker.strip(), name.strip(), type_.strip()
         if type_ == "Stock":
             self.content.setCurrentWidget(self.content.pages.stock_page)
