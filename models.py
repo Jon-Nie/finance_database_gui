@@ -1,4 +1,5 @@
 from queries import get_stock_data
+import pandas as pd
 from PySide2.QtCore import QAbstractListModel, QModelIndex, Qt, Signal
 
 class StockData(QAbstractListModel):
@@ -6,7 +7,10 @@ class StockData(QAbstractListModel):
     update_logo = Signal(bytes)
     update_country_icon = Signal(bytes)
     update_news = Signal(list)
-    update_factor_box = Signal(float, float, float)
+    update_value_box = Signal(float, float, float)
+    update_profitability_box = Signal(float, float, float)
+    update_growth_box = Signal(float, float, float)
+    update_fundamental_view = Signal(pd.Series, str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -27,20 +31,21 @@ class StockData(QAbstractListModel):
                 self.dataChanged.emit(index, index)
             self.update_logo.emit(self.stockdata[0])
             self.update_country_icon.emit(self.stockdata[8])
-            self.update_factor_box.emit(
+            self.update_value_box.emit(
                 (self.stockdata[20]["e/p"][-1]),
                 self.stockdata[20]["b/m"][-1],
                 self.stockdata[20]["s/p"][-1]
             )
-            self.update_factor_box.emit(
+            self.update_profitability_box.emit(
                 self.stockdata[20]["roe ttm"][-1],
                 self.stockdata[20]["roa ttm"][-1],
                 self.stockdata[20]["net margin ttm"][-1]
             )
-            self.update_factor_box.emit(
+            self.update_growth_box.emit(
                 self.stockdata[20]["revenue growth ttm"][-1],
                 self.stockdata[20]["net income growth ttm"][-1],
                 self.stockdata[20]["reinvestment rate ttm"][-1]
             )
+            self.update_fundamental_view.emit(self.stockdata[21]["revenue ttm"], "Revenue")
             return True
         return False

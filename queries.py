@@ -105,7 +105,7 @@ def get_fundamental_variables(source) -> list:
     data = {item[0]: item[1] for item in data}
     return data
 
-def get_fundamental_data(ticker, variable, source) -> list:
+def get_fundamental_series(ticker, variable, source) -> list:
     security_id = cur.execute("SELECT id FROM securities WHERE ticker = ?", (ticker,)).fetchone()[0]
     variable_id = cur.execute(f"SELECT id FROM fundamental_variables_{source} WHERE name = ?", (variable,)).fetchone()[0]
     data = cur.execute(
@@ -124,10 +124,38 @@ def get_time_series_data(ticker=None, isin=None) -> pd.DataFrame:
         ticker = cur.execute("SELECT ticker FROM securities WHERE isin = ?", (isin,)).fetchone()[0]
     
     prices = get_price_data(ticker)
+    fundamentals = get_fundamental_data(ticker)
+
+    df = pd.concat([prices, fundamentals], axis=1)
+    df.index = pd.to_datetime(df.index, unit="s")
+    df = df.sort_index()
+
+    df["split"] = df["split"].fillna(0)
+    df["dividends"] = df["dividends"].fillna(0)
+
+    for col in df.columns:
+        if col in ("close", "adj_close", "split", "simple_return", "dividends"):
+            continue
+        df[col] = df[col].ffill()
+    
+    df = df.copy()
+    df["market_cap"] = df["close"] * df["diluted shares outstanding"]
+    df["e/p"] = df["income from continuous operations ttm"] / df["market_cap"]
+    df["cf/p"] = df["cashflow from operating activities ttm"] / df["market_cap"]
+    df["b/m"] = df["total shareholders equity ttm"] / df["market_cap"]
+    df["s/p"] = df["revenue ttm"] / df["market_cap"]
+    df["payout_yield"] = -(df["total dividends paid ttm"].fillna(0) + df["common stock issued/repurchased ttm"].fillna(0)) / df["market_cap"]
+    
+    df = df[df["close"].notna()]
+    
+    return df, fundamentals
+
+
+def get_fundamental_data(ticker):
     macrotrends_variables = get_fundamental_variables("macrotrends")
     series_list = []
     for variable in macrotrends_variables.keys():
-        series = get_fundamental_data(ticker, variable, "macrotrends")
+        series = get_fundamental_series(ticker, variable, "macrotrends")
         if len(series) == 0:
             series = pd.Series(dtype = "float64")
         else:
@@ -157,35 +185,13 @@ def get_time_series_data(ticker=None, isin=None) -> pd.DataFrame:
         fundamentals[f"roa{scope}"] = fundamentals[f"net income{scope}"] / fundamentals[f"total assets{scope}"]
         fundamentals[f"roe{scope}"] = fundamentals[f"net income{scope}"] / fundamentals[f"total shareholders equity{scope}"]
         fundamentals[f"reinvestment rate{scope}"] = 1+(fundamentals[f"total dividends paid{scope}"].replace(np.NaN, 0)+fundamentals[f"total stock issued/repurchased{scope}"].replace(np.NaN, 0))  / fundamentals[f"net income{scope}"]
-
-    df = pd.concat([prices, fundamentals], axis=1)
-    df.index = pd.to_datetime(df.index, unit="s")
-    df = df.sort_index()
-
-    df["split"] = df["split"].fillna(0)
-    df["dividends"] = df["dividends"].fillna(0)
-
-    for col in df.columns:
-        if col in ("close", "adj_close", "split", "simple_return", "dividends"):
-            continue
-        df[col] = df[col].ffill()
     
-    df = df.copy()
-    df["market_cap"] = df["close"] * df["diluted shares outstanding"]
-    df["e/p"] = df["income from continuous operations ttm"] / df["market_cap"]
-    df["cf/p"] = df["cashflow from operating activities ttm"] / df["market_cap"]
-    df["b/m"] = df["total shareholders equity ttm"] / df["market_cap"]
-    df["s/p"] = df["revenue ttm"] / df["market_cap"]
-    df["payout_yield"] = -(df["total dividends paid ttm"].fillna(0) + df["common stock issued/repurchased ttm"].fillna(0)) / df["market_cap"]
-    
-    df = df[df["close"].notna()]
-    
-    return df
+    return fundamentals
 
 def get_stock_data(ticker) -> list:
     data = get_company_profile(ticker)
     news = get_news(ticker)
-    time_series = get_time_series_data(ticker)
+    time_series, fundamental_data = get_time_series_data(ticker)
     index = time_series.index
     data.insert(4, f"${time_series.loc[index[-1], 'adj_close']:.2f}")
     market_cap = time_series.loc[index[-1], "market_cap"]
@@ -209,5 +215,6 @@ def get_stock_data(ticker) -> list:
         data[13] = f"{data[13]:,d} Employees".replace(",", ".")
     
     data.insert(20, time_series)
+    data.insert(21, fundamental_data)
 
     return data
