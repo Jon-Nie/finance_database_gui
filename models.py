@@ -11,7 +11,7 @@ class StockData(QAbstractListModel):
     update_profitability_box = Signal(pd.DataFrame)
     update_growth_box = Signal(pd.DataFrame)
     update_fundamental_view = Signal(pd.Series, str)
-    update_prices = Signal(pd.Series)
+    update_prices = Signal(pd.DataFrame)
 
     def __init__(self) -> None:
         super().__init__()
@@ -42,6 +42,6 @@ class StockData(QAbstractListModel):
                 self.stockdata[21][["revenue growth ttm", "net income growth ttm", "reinvestment rate ttm"]]
             )
             self.update_fundamental_view.emit(self.stockdata[21]["revenue ttm"], "Revenue")
-            self.update_prices.emit(self.stockdata[20]["close"])
+            self.update_prices.emit(self.stockdata[20][["close", "adj_close", "split"]])
             return True
         return False

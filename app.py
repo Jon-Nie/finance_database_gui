@@ -245,7 +245,6 @@ class Content(QFrame):
         else:
             self.topbar.change_style("white")
 
-
 if __name__ == "__main__":
     app = QApplication()
     window = MainWindow()

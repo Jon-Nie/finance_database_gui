@@ -387,7 +387,9 @@ class PriceView(QFrame):
         self.setStyleSheet(
             """
             QFrame {
-                background-color: #3E75C8
+                background-color: #3E75C8;
+                border-bottom-left-radius: 0px;
+                border-bottom-right-radius: 0px;
             }
             """
         )
@@ -413,7 +415,7 @@ class PriceView(QFrame):
         self.options_frame.adjusted.stateChanged.connect(self.update_data)
         self.options_frame.raw.stateChanged.connect(self.update_data)
     
-    @Slot(pd.Series)
+    @Slot(pd.DataFrame)
     def set_data(self, series):
         self.data = series.dropna()
         self.update_data()
@@ -425,7 +427,6 @@ class PriceView(QFrame):
         else:
             self.options_frame.hide()
 
-    
     def update_data(self):
         if self.sender() in self.timeframe_picker.buttons.values():
             label = self.sender().text()
@@ -454,12 +455,15 @@ class PriceView(QFrame):
         pen.setWidth(2)
         pen.setColor("#FFFFFF")
         self.series.setPen(pen)
-        for index in self.data.loc[ts:].index:
+        if self.options_frame.adjusted.isChecked():
+            series_name = "adj_close"
+        else:
+            series_name = "close"
+        for index in self.data.loc[ts:, series_name].index:
             if self.options_frame.log.isChecked():
-                self.series.append(index, np.log(self.data.loc[index]))
+                self.series.append(index, np.log(self.data.loc[index, series_name]))
             else:
-
-                self.series.append(index, self.data.loc[index])
+                self.series.append(index, self.data.loc[index, series_name])
 
         self.chart = QtCharts.QChart()
         self.chart.addSeries(self.series)
