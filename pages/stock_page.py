@@ -415,11 +415,6 @@ class PriceView(QFrame):
         self.options_frame.adjusted.stateChanged.connect(self.update_data)
         self.options_frame.raw.stateChanged.connect(self.update_data)
     
-    @Slot(pd.DataFrame)
-    def set_data(self, series):
-        self.data = series.dropna()
-        self.update_data()
-    
     def show_options(self):
         self.options_frame.setGeometry(self.width()-230, 70, 230, 130)
         if self.options_frame.isHidden():
@@ -459,6 +454,11 @@ class PriceView(QFrame):
             series_name = "adj_close"
         else:
             series_name = "close"
+        if self.options_frame.raw.isChecked():
+            self.data["raw"] = self.data[series_name] * self.data["cum split"]
+            series_name = "raw"
+        else:
+            pass
         for index in self.data.loc[ts:, series_name].index:
             if self.options_frame.log.isChecked():
                 self.series.append(index, np.log(self.data.loc[index, series_name]))
@@ -470,6 +470,12 @@ class PriceView(QFrame):
         self.chart.setBackgroundBrush(QBrush(QColor("transparent")))
         self.chart.legend().hide()
         self.chartview.setChart(self.chart)
+
+    @Slot(pd.DataFrame)
+    def set_data(self, series):
+        self.data = series.dropna()
+        self.data["cum split"] =  self.data.loc[::-1, 'split'].replace(0, 1).cumprod()[::-1]
+        self.update_data()
 
 
 class OptionsFrame(QFrame):
